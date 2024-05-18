@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model InviteConfig {
+  id       Int    @id @default(autoincrement())
+  clientID Int
+  config   Json
+  client   Client @relation(fields: [clientID], references: [id])
+}
+
+model Client {
+  id            Int            @id @default(autoincrement())
+  name          Int
+  InviteConfigs InviteConfig[]
+  users         User[]
+  sessions      Session[]
+}
+
+model Enrollment {
+  id             Int              @id @default(autoincrement())
+  userID         Int
+  SessionID      Int
+  user           User             @relation(fields: [userID], references: [id])
+  session        Session          @relation(fields: [SessionID], references: [id])
+  AttendanceLogs AttendanceLogs[]
+}
+
+enum TokenType {
+  ACCESS
+  REFRESH
+  RESET_PASSWORD
+  VERIFY_EMAIL
+}
+
+enum UserType {
+  ADMIN
+  USER
+}
+
+model User {
+  id          Int          @id @default(autoincrement())
+  name        String       @db.VarChar(255)
+  email       String       @unique @db.VarChar(255)
+  password    String       @db.VarChar(255)
+  clientID    Int?
+  userData    Json?
+  userType    UserType
+  client      Client?      @relation(fields: [clientID], references: [id])
+  Enrollments Enrollment[]
+  Token       Token[]
+}
+
+model Token {
+  id          Int       @id @default(autoincrement())
+  token       String
+  type        TokenType
+  expires     DateTime
+  blacklisted Boolean
+  userId      Int
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model Session {
+  id            Int          @id
+  name          String       @db.VarChar(255)
+  startDateTime DateTime     @db.Date
+  endDateTime   DateTime     @db.Date
+  clientID      Int
+  client        Client       @relation(fields: [clientID], references: [id])
+  Enrollments   Enrollment[]
+}
+
+model AttendanceLogs {
+  id                 Int        @id
+  enrollmentID       Int
+  attendanceMarkedAt DateTime   @db.Date
+  enrollment         Enrollment @relation(fields: [enrollmentID], references: [id])
+}
