@@ -44,6 +44,8 @@ enum TokenType {
 enum UserType {
   ADMIN
   USER
+  CLIENT
+  MACHINE
 }
 
 model User {
