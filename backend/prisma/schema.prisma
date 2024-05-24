@@ -19,7 +19,7 @@ model InviteConfig {
 
 model Client {
   id            Int            @id @default(autoincrement())
-  name          Int
+  name          String         @db.VarChar(255)
   InviteConfigs InviteConfig[]
   users         User[]
   sessions      Session[]
