@@ -4,6 +4,7 @@ import userRoute from './user.route';
 import docsRoute from './docs.route';
 import adminRoute from './admin.route';
 import config from '../../config/config';
+import clientRoute from './client.route';
 
 const router = express.Router();
 
@@ -19,6 +20,10 @@ const defaultRoutes = [
   {
     path: '/admin',
     route: adminRoute
+  },
+  {
+    path: '/client',
+    route: clientRoute
   }
 ];
 
