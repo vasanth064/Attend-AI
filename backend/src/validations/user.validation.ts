@@ -46,10 +46,22 @@ const deleteUser = {
   })
 };
 
+const enrollUser = {
+  body: Joi.object()
+    .keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().custom(password),
+      name: Joi.string().required(),
+      clientID: Joi.number().required()
+    })
+    .pattern(/.+/, Joi.any())
+};
+
 export default {
   createUser,
   getUsers,
   getUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  enrollUser
 };

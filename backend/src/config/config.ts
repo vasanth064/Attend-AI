@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import Joi from 'joi';
+import { url } from 'inspector';
 
 dotenv.config({ path: path.join(process.cwd(), '.env') });
 
@@ -25,7 +26,9 @@ const envVarsSchema = Joi.object()
     SMTP_PORT: Joi.number().description('port to connect to the email server'),
     SMTP_USERNAME: Joi.string().description('username for email server'),
     SMTP_PASSWORD: Joi.string().description('password for email server'),
-    EMAIL_FROM: Joi.string().description('the from field in the emails sent by the app')
+    EMAIL_FROM: Joi.string().description('the from field in the emails sent by the app'),
+    ORION_URL: Joi.string().description('the url of the orion api'),
+    ORION_API_KEY: Joi.string().description('the api key of the orion api')
   })
   .unknown();
 
@@ -57,5 +60,9 @@ export default {
       }
     },
     from: envVars.EMAIL_FROM
+  },
+  orion: {
+    url: envVars.ORION_URL,
+    apiKey: envVars.ORION_API_KEY
   }
 };

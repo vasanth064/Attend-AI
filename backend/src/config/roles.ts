@@ -1,7 +1,7 @@
 import { UserType as Role } from '@prisma/client';
 
 const allRoles = {
-  [Role.USER]: [],
+  [Role.USER]: ['tradUser'],
   [Role.ADMIN]: ['getClients', 'manageClients', 'getUsers', 'manageUsers'],
   [Role.CLIENT]: ['manageUsers'],
   [Role.MACHINE]: ['markAttendance']
