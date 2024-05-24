@@ -9,6 +9,11 @@ const createClient = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send({ user: exclude(newUser, ['password']) });
 });
 
+const getAllClients = catchAsync(async (req, res) => {
+  // TODO
+});
+
 export default {
-  createClient
+  createClient,
+  getAllClients
 };

@@ -48,6 +48,11 @@ enum UserType {
   MACHINE
 }
 
+enum UserStatus {
+  ENABLED
+  DISABLED
+}
+
 model User {
   id          Int          @id @default(autoincrement())
   name        String       @db.VarChar(255)
@@ -56,6 +61,7 @@ model User {
   clientID    Int?
   userData    Json?
   userType    UserType
+  status      UserStatus  @default(ENABLED)
   client      Client?      @relation(fields: [clientID], references: [id])
   Enrollments Enrollment[]
   Token       Token[]
