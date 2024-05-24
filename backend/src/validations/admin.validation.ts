@@ -9,6 +9,20 @@ const createClient = Joi.object().keys({
   })
 });
 
+const deleteClient = Joi.object().keys({
+  params: Joi.object().keys({
+    clientId: Joi.number().integer()
+  })
+});
+
+const getAllClients = Joi.object().keys({
+  params: Joi.object().keys({
+    clientId: Joi.number().integer()
+  })
+});
+
 export default {
-  createClient
+  createClient,
+  deleteClient,
+  getAllClients
 };

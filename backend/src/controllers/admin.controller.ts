@@ -10,10 +10,27 @@ const createClient = catchAsync(async (req, res) => {
 });
 
 const getAllClients = catchAsync(async (req, res) => {
-  // TODO
+  res.status(httpStatus.OK).send(await adminService.getAllClients());
+});
+
+const getClientById = catchAsync(async (req, res) => {
+  const { clientId } = req.params;
+  const user = await adminService.getClientById(parseInt(clientId));
+  if (!user) {
+    res.status(httpStatus.NOT_FOUND).send({ message: 'User not found' });
+  }
+  res.status(httpStatus.OK).send(user);
+});
+
+const deleteClient = catchAsync(async (req, res) => {
+  const { clientId } = req.params;
+  await adminService.deleteClient(parseInt(clientId));
+  res.status(httpStatus.OK).send({ message: 'Client deleted' });
 });
 
 export default {
   createClient,
-  getAllClients
+  getAllClients,
+  deleteClient,
+  getClientById
 };

@@ -9,7 +9,15 @@ const router = express.Router();
 
 router
   .route('/')
-  .post(auth('manageUsers'), validate(adminValidation.createClient), adminController.createClient)
-  .get(auth('getUsers', 'manageUsers'), adminController.getAllClients)
-  .delete(auth('manageUsers'));
+  .post(auth('manageClients'), validate(adminValidation.createClient), adminController.createClient)
+  .get(auth('getClients', 'manageClients'), adminController.getAllClients);
+
+router
+  .route('/:clientId')
+  .get(auth('getClients'), validate(adminValidation.getAllClients), adminController.getClientById)
+  .delete(
+    auth('manageClients'),
+    validate(adminValidation.deleteClient),
+    adminController.deleteClient
+  );
 export default router;
