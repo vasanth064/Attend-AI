@@ -1,5 +1,12 @@
 import { InviteConfig, Session } from '@prisma/client';
 import prisma from '../client';
+import userService from './user.service';
+
+import ApiError from '../utils/ApiError';
+import httpStatus from 'http-status';
+
+import { encryptPassword } from '../utils/encryption';
+import { User, UserType } from '@prisma/client';
 
 interface Config {
   label: string;
@@ -105,6 +112,47 @@ const updateSession = async (
   return updatedSession;
 };
 
+const createMachine = async (name: string, email: string, password: string, clientID: number) => {
+  const user = await userService.getUserByEmail(email);
+  if (user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
+  }
+
+  return await prisma.user.create({
+    data: {
+      name: name,
+      email: email,
+      password: await encryptPassword(password),
+      userType: UserType.MACHINE,
+      clientID: clientID
+    }
+  });
+};
+
+const deleteMachineById = async (machineID: number): Promise<void> => {
+  await prisma.token.deleteMany({
+    where: {
+      userId: machineID
+    }
+  });
+
+  await prisma.user.delete({
+    where: {
+      id: machineID
+    }
+  });
+};
+
+const getAllMachines = async (clientID: number): Promise<User[]> => {
+  const machines = await prisma.user.findMany({
+    where: {
+      clientID: clientID,
+      userType: UserType.MACHINE
+    }
+  });
+  return machines;
+};
+
 const clientService = {
   createLink,
   getInviteLinks,
@@ -114,7 +162,10 @@ const clientService = {
   getSessions,
   getSession,
   deleteSession,
-  updateSession
+  updateSession,
+  createMachine,
+  deleteMachineById,
+  getAllMachines
 };
 
 export default clientService;
@@ -127,5 +178,7 @@ export {
   createSession,
   getSessions,
   getSession,
-  deleteSession
+  deleteSession,
+  createMachine,
+  getAllMachines
 };

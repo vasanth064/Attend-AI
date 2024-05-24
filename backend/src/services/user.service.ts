@@ -183,7 +183,7 @@ const enrollUser = async (
   userData: unknown = {},
   filePath: string
 ) => {
-  const result = await orionRequest(filePath);
+  const result = await orionRequest(filePath, email);
 
   if (result.statusCode !== 200) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Orion request failed');

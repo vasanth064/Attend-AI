@@ -4,13 +4,15 @@ import fs from 'fs';
 import crypto from 'crypto';
 
 import config from '../config/config';
+import logger from '../config/logger';
 
 const orionRequest = async (filename: string, transactionId?: string) => {
   const fileInp = fs.createReadStream(filename);
   const formData = new FormData();
   formData.append('selfie', fileInp);
-  if (!transactionId) {
+  if (transactionId) {
     formData.append('enrol', 'yes');
+  } else {
     transactionId = crypto.randomBytes(16).toString('hex');
   }
   formData.append('transactionId', transactionId);
@@ -25,6 +27,8 @@ const orionRequest = async (filename: string, transactionId?: string) => {
     },
     data: formData
   };
+
+  console.log(requestConfig);
   const response = await axios.request(requestConfig);
   const result = response.data;
   fs.unlink(filename, (err) => {

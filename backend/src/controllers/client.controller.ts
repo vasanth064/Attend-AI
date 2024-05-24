@@ -109,6 +109,32 @@ const updateSession = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ session: updatedSession });
 });
 
+const createMachine = catchAsync(async (req, res) => {
+  const { clientID } = req.user as User;
+  if (!clientID) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Authorization error');
+  }
+
+  const { name, email, password } = req.body;
+  const machine = await clientService.createMachine(name, email, password, clientID);
+  res.status(httpStatus.CREATED).send({ machine });
+});
+
+const deleteMachine = catchAsync(async (req, res) => {
+  const { machineID } = req.params;
+  await clientService.deleteMachineById(parseInt(machineID));
+  res.status(httpStatus.OK).send({ message: 'Machine deleted' });
+});
+
+const getAllMachines = catchAsync(async (req, res) => {
+  const { clientID } = req.user as User;
+  if (!clientID) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Client ID is required');
+  }
+  const machines = await clientService.getAllMachines(clientID);
+  res.status(httpStatus.OK).send(machines);
+});
+
 export default {
   createLink,
   getInviteLinks,
@@ -118,5 +144,8 @@ export default {
   getSessions,
   getSession,
   deleteSession,
-  updateSession
+  updateSession,
+  createMachine,
+  deleteMachine,
+  getAllMachines
 };

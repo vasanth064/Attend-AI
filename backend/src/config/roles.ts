@@ -3,7 +3,7 @@ import { UserType as Role } from '@prisma/client';
 const allRoles = {
   [Role.USER]: ['tradUser'],
   [Role.ADMIN]: ['getClients', 'manageClients', 'getUsers', 'manageUsers'],
-  [Role.CLIENT]: ['manageUsers', 'manageInviteLinks', 'manageSessions'],
+  [Role.CLIENT]: ['manageUsers', 'manageInviteLinks', 'manageSessions', 'manageMachines'],
   [Role.MACHINE]: ['markAttendance']
 };
 

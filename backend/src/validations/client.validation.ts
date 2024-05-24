@@ -38,7 +38,23 @@ const session = {
   })
 };
 
+const createMachine = {
+  body: Joi.object().keys({
+    name: Joi.string().required(),
+    email: Joi.string().email().required(),
+    password: Joi.string().required()
+  })
+};
+
+const deleteMachine = Joi.object().keys({
+  params: Joi.object().keys({
+    machineID: Joi.number().required()
+  })
+});
+
 export default {
   createLink,
-  session
+  session,
+  createMachine,
+  deleteMachine
 };

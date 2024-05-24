@@ -31,6 +31,23 @@ router
   .delete(auth('manageSessions'), clientController.deleteSession)
   .get(auth('manageSessions'), clientController.getSession);
 
+router
+  .route('/machine')
+  .post(
+    auth('manageMachines'),
+    validate(clientValidation.createMachine),
+    clientController.createMachine
+  )
+  .get(auth('manageMachines'), clientController.getAllMachines);
+
+router
+  .route('/machine/:machineID')
+  .delete(
+    auth('manageMachines'),
+    validate(clientValidation.deleteMachine),
+    clientController.deleteMachine
+  );
+
 export default router;
 
 /**
