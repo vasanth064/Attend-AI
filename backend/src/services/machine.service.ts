@@ -47,10 +47,7 @@ const markAttendance = async (sessionID: number, filepath: string) => {
     throw new ApiError(400, 'User not enrolled to this session');
   }
 
-  if (
-    Date.now() < session.startDateTime.getUTCMilliseconds() ||
-    Date.now() > session.endDateTime.getUTCMilliseconds()
-  ) {
+  if (Date.now() < session.startDateTime.getTime() || Date.now() > session.endDateTime.getTime()) {
     throw new ApiError(400, 'Session is not active');
   }
 
