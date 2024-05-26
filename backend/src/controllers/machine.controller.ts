@@ -1,17 +1,26 @@
 import httpStatus from 'http-status';
-import pick from '../utils/pick';
 import ApiError from '../utils/ApiError';
 import catchAsync from '../utils/catchAsync';
-import { adminService, userService } from '../services';
-import { User } from '@prisma/client';
+import machineService from '../services/machine.service';
+import fs from 'fs';
+import logger from '../config/logger';
 
 const markAttendance = catchAsync(async (req, res) => {
   if (!req.file) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'No file provided');
   }
   const { path } = req.file;
-
-  res.send({ message: 'Attendance marked' });
+  try {
+    const { sessionID } = req.body;
+    const result = await machineService.markAttendance(parseInt(sessionID), path);
+    res.send({ message: 'Attendance marked', ...result });
+  } finally {
+    fs.unlink(path, (err) => {
+      if (err) {
+        logger.error(err);
+      }
+    });
+  }
 });
 
 export default {

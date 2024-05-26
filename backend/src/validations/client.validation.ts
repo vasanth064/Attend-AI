@@ -52,9 +52,24 @@ const deleteMachine = Joi.object().keys({
   })
 });
 
+const approveUserCreation = Joi.object().keys({
+  body: Joi.object().keys({
+    userIDs: Joi.array().items(Joi.number()).required()
+  })
+});
+
+const enrollUserToSession = Joi.object().keys({
+  body: Joi.object().keys({
+    sessionID: Joi.number().required(),
+    userID: Joi.number().required()
+  })
+});
+
 export default {
   createLink,
   session,
   createMachine,
-  deleteMachine
+  deleteMachine,
+  enrollUserToSession,
+  approveUserCreation
 };

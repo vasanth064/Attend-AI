@@ -5,6 +5,7 @@ import docsRoute from './docs.route';
 import adminRoute from './admin.route';
 import config from '../../config/config';
 import clientRoute from './client.route';
+import machineRoute from './machine.route';
 
 const router = express.Router();
 
@@ -24,6 +25,10 @@ const defaultRoutes = [
   {
     path: '/client',
     route: clientRoute
+  },
+  {
+    path: '/machine',
+    route: machineRoute
   }
 ];
 

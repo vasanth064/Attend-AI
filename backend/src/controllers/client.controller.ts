@@ -135,6 +135,32 @@ const getAllMachines = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(machines);
 });
 
+const approveUserCreations = catchAsync(async (req, res) => {
+  const clientUser = req.user as User;
+  const { userIDs } = req.body;
+
+  if (!clientUser.clientID) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Not a valid client user, login');
+  }
+  const updataedUsers = await clientService.approveUserCreations(userIDs, clientUser.clientID);
+  res.status(httpStatus.OK).send({ message: 'User creations approved', updataedUsers });
+});
+
+const enrollUserToSession = catchAsync(async (req, res) => {
+  const { clientID } = req.user as User;
+  if (!clientID) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Client ID is required');
+  }
+
+  const { sessionID, userID } = req.body;
+  const session = await clientService.enrollUserToSession(
+    parseInt(sessionID),
+    parseInt(userID),
+    clientID
+  );
+  res.status(httpStatus.OK).send({ message: `User ${userID} enrolled to session`, session });
+});
+
 export default {
   createLink,
   getInviteLinks,
@@ -147,5 +173,7 @@ export default {
   updateSession,
   createMachine,
   deleteMachine,
-  getAllMachines
+  getAllMachines,
+  approveUserCreations,
+  enrollUserToSession
 };
