@@ -1,16 +1,13 @@
 import {
-  selectAccessToken,
   selectCurrentUser,
 } from '@/redux/authentication/authSlice';
 import { useSelector } from 'react-redux';
 
 const Home = () => {
-  const user = useSelector(selectCurrentUser);
-  const token = useSelector(selectAccessToken);
+  const { user } = useSelector(selectCurrentUser);
   return (
     <div>
-      <h1>{JSON.stringify(user)}</h1>
-      <h1>{JSON.stringify(token)}</h1>
+      <h1>Hello {user?.name}</h1>
     </div>
   );
 };
