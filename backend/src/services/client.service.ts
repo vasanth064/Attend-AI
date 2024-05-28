@@ -1,4 +1,4 @@
-import { InviteConfig, Session } from '@prisma/client';
+import { InviteConfig, Session, UserStatus } from '@prisma/client';
 import prisma from '../client';
 import userService from './user.service';
 
@@ -153,6 +153,55 @@ const getAllMachines = async (clientID: number): Promise<User[]> => {
   return machines;
 };
 
+const getEnrollment = async (sessionID: number, userID: number) => {
+  const enrollment = await prisma.enrollment.findFirst({
+    where: {
+      userID: userID,
+      SessionID: sessionID
+    }
+  });
+  return enrollment;
+};
+
+const approveUserCreations = async (userIDs: number[], clientID: number) => {
+  return await prisma.user.updateMany({
+    where: {
+      id: {
+        in: userIDs
+      },
+      clientID: clientID
+    },
+    data: {
+      status: UserStatus.ENABLED
+    }
+  });
+};
+
+const enrollUserToSession = async (sessionID: number, userID: number, clientID: number) => {
+  const session = await clientService.getSession(sessionID);
+  if (!session || session.clientID !== clientID) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Session not found');
+  }
+
+  const user = await userService.getUserById(userID);
+  if (!user || user.userType !== UserType.USER || user.status === UserStatus.DISABLED) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  const enrollment = await clientService.getEnrollment(sessionID, userID);
+  if (enrollment) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User already enrolled to this session');
+  }
+
+  const newEnrollment = await prisma.enrollment.create({
+    data: {
+      userID: userID,
+      SessionID: sessionID
+    }
+  });
+  return newEnrollment;
+};
+
 const clientService = {
   createLink,
   getInviteLinks,
@@ -165,7 +214,10 @@ const clientService = {
   updateSession,
   createMachine,
   deleteMachineById,
-  getAllMachines
+  getAllMachines,
+  enrollUserToSession,
+  getEnrollment,
+  approveUserCreations
 };
 
 export default clientService;

@@ -4,14 +4,27 @@ import validate from '../../middlewares/validate';
 
 import { machineController } from '../../controllers';
 
+import Joi, { valid } from 'joi';
+
 import multer from 'multer';
 
 var upload = multer({ dest: './uploads/' });
 
 const router = express.Router();
 
+const searchSchema = Joi.object().keys({
+  body: Joi.object({
+    sessionID: Joi.number().required()
+  })
+});
+
 router
   .route('/')
-  .post(auth('manageAttendance'), upload.single('file'), machineController.markAttendance);
+  .post(
+    auth('markAttendance'),
+    upload.single('file'),
+    validate(searchSchema),
+    machineController.markAttendance
+  );
 
 export default router;

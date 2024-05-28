@@ -21,6 +21,14 @@ router
   .get(auth('manageInviteLinks'), clientController.getInviteLink);
 
 router
+  .route('/approve-users')
+  .post(
+    auth('manageUsers'),
+    validate(clientValidation.approveUserCreation),
+    clientController.approveUserCreations
+  );
+
+router
   .route('/session')
   .post(auth('manageSessions'), validate(clientValidation.session), clientController.createSession)
   .get(auth('manageSessions'), clientController.getSessions);
@@ -46,6 +54,14 @@ router
     auth('manageMachines'),
     validate(clientValidation.deleteMachine),
     clientController.deleteMachine
+  );
+
+router
+  .route('/enroll')
+  .post(
+    auth('manageUsers'),
+    validate(clientValidation.enrollUserToSession),
+    clientController.enrollUserToSession
   );
 
 export default router;
