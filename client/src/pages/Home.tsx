@@ -1,24 +1,17 @@
-import { Button } from '@/components/ui/button';
-import { useSelector, useDispatch } from 'react-redux';
-import { counterSlice } from '@/redux/counter/counterSlice';
-import { RootState } from '@/redux/store';
+import {
+  selectAccessToken,
+  selectCurrentUser,
+} from '@/redux/authentication/authSlice';
+import { useSelector } from 'react-redux';
 
 const Home = () => {
-  const count = useSelector((state: RootState) => state.counter.value);
-  const dispatch = useDispatch();
-
+  const user = useSelector(selectCurrentUser);
+  const token = useSelector(selectAccessToken);
   return (
-    <center>
-      <h1>Count : {count}</h1>
-      <div className='d-flex gap-3'>
-        <Button onClick={() => dispatch(counterSlice.actions.increment())}>
-          Increment
-        </Button>
-        <Button onClick={() => dispatch(counterSlice.actions.decrement())}>
-          Decrement
-        </Button>
-      </div>
-    </center>
+    <div>
+      <h1>{JSON.stringify(user)}</h1>
+      <h1>{JSON.stringify(token)}</h1>
+    </div>
   );
 };
 
