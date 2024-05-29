@@ -1,4 +1,5 @@
 import PrivateRoute from '@/components/PrivateRoute';
+import Admin from '@/pages/Admin';
 import Home from '@/pages/Home';
 import Signin from '@/pages/Signin';
 import Signup from '@/pages/Signup';
@@ -20,6 +21,10 @@ const routes = createBrowserRouter([
         index: true,
         element: <Home />,
       },
+      {
+        path: '/admin',
+        element: <Admin />
+      }
     ],
     isPrivate: true,
     hidden: true,
@@ -32,6 +37,7 @@ const routes = createBrowserRouter([
     path: '/signup',
     element: <Signup />,
   },
+
 ] as Routes[]);
 
 export default routes;

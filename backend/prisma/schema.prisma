@@ -14,7 +14,7 @@ model InviteConfig {
   id       Int    @id @default(autoincrement())
   clientID Int
   config   Json
-  client   Client @relation(fields: [clientID], references: [id])
+  client   Client @relation(fields: [clientID], references: [id], onDelete: Cascade)
 }
 
 model Client {
@@ -29,8 +29,8 @@ model Enrollment {
   id             Int              @id @default(autoincrement())
   userID         Int
   SessionID      Int
-  user           User             @relation(fields: [userID], references: [id])
-  session        Session          @relation(fields: [SessionID], references: [id])
+  user           User             @relation(fields: [userID], references: [id], onDelete: Cascade)
+  session        Session          @relation(fields: [SessionID], references: [id], onDelete: Cascade)
   AttendanceLogs AttendanceLogs[]
 }
 
@@ -62,7 +62,7 @@ model User {
   userData    Json?
   userType    UserType
   status      UserStatus   @default(ENABLED)
-  client      Client?      @relation(fields: [clientID], references: [id])
+  client      Client?      @relation(fields: [clientID], references: [id], onDelete: Cascade)
   Enrollments Enrollment[]
   Token       Token[]
 }
@@ -75,7 +75,7 @@ model Token {
   blacklisted Boolean
   userId      Int
   createdAt   DateTime  @default(now())
-  user        User      @relation(fields: [userId], references: [id])
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Session {
@@ -84,7 +84,7 @@ model Session {
   startDateTime DateTime     @db.Date
   endDateTime   DateTime     @db.Date
   clientID      Int
-  client        Client       @relation(fields: [clientID], references: [id])
+  client        Client       @relation(fields: [clientID], references: [id], onDelete: Cascade)
   Enrollments   Enrollment[]
 }
 
@@ -92,5 +92,5 @@ model AttendanceLogs {
   id                 Int        @id @default(autoincrement())
   enrollmentID       Int
   attendanceMarkedAt DateTime   @db.Date
-  enrollment         Enrollment @relation(fields: [enrollmentID], references: [id])
+  enrollment         Enrollment @relation(fields: [enrollmentID], references: [id], onDelete: Cascade)
 }

@@ -58,14 +58,16 @@ const getClientUserByClientId = async (clientId: number) => {
     where: { clientID: clientId, userType: UserType.CLIENT },
     select: { id: true, email: true, name: true, password: true, userType: true, clientID: true }
   });
-
   if (users.length === 0 || users[0].userType !== UserType.CLIENT) {
+
     throw new Error('Client does not have any users');
   }
   return users[0];
 };
 
+
 const deleteClient = async (clientId: number): Promise<void> => {
+  // Delete the sessions
   const client = await adminService.getClientById(clientId);
   const clientUser = await adminService.getClientUserByClientId(clientId);
   if (!client) {
@@ -77,8 +79,9 @@ const deleteClient = async (clientId: number): Promise<void> => {
   if (!clientUser.clientID) {
     throw new Error('Client does not have a clientID');
   }
-  await prisma.client.delete({ where: { id: clientId } });
-  await prisma.user.delete({ where: { id: clientUser.id } });
+  await prisma.$transaction(async (tx) => {
+    await tx.client.delete({ where: { id: clientId } });
+  })
 };
 
 const getAllClients = async () => {
@@ -91,7 +94,7 @@ const adminService = {
   getClientUserById,
   getClientById,
   getClientUserByClientId,
-  getAllClients
+  getAllClients,
 };
 
 export default adminService;
