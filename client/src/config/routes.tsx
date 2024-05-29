@@ -1,25 +1,25 @@
-import Layout from '@/components/Layout';
-import PrivateRoute from '@/components/PrivateRoute';
-import Admin from '@/pages/Admin';
-import Home from '@/pages/Home';
-import Sessions from '@/pages/Sessions';
-import Signin from '@/pages/Signin';
-import Signup from '@/pages/Signup';
-import { createBrowserRouter } from 'react-router-dom';
+import Layout from "@/components/Layout";
+import PrivateRoute from "@/components/PrivateRoute";
+import Admin from "@/pages/Admin";
+import Home from "@/pages/Home";
+import Sessions from "@/pages/Sessions";
+import Signin from "@/pages/Signin";
+import Signup from "@/pages/Signup";
+import { createBrowserRouter } from "react-router-dom";
 interface Routes {
   path: string;
   title: string;
   roles: string[];
 }
 export enum ROLES {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-  CLIENT = 'CLIENT',
-  MACHINE = 'MACHINE',
+  ADMIN = "ADMIN",
+  USER = "USER",
+  CLIENT = "CLIENT",
+  MACHINE = "MACHINE",
 }
 const routerRoutes = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: (
       <Layout>
         <PrivateRoute />
@@ -27,19 +27,19 @@ const routerRoutes = createBrowserRouter([
     ),
     children: [
       {
-        path: '/',
+        path: "/",
         index: true,
         element: <Home />,
       },
       {
-        path: '/admin',
-        element: <Admin />
-      }
+        path: "/admin",
+        element: <Admin />,
+      },
       {
-        path: '/client',
+        path: "/client",
         children: [
           {
-            path: 'sessions',
+            path: "sessions",
             element: <Sessions />,
           },
         ],
@@ -47,26 +47,25 @@ const routerRoutes = createBrowserRouter([
     ],
   },
   {
-    path: '/signin',
+    path: "/signin",
     element: <Signin />,
   },
   {
-    path: '/signup',
+    path: "/signup",
     element: <Signup />,
   },
-
 ]);
 
 export const routes: Routes[] = [
   {
-    path: '/',
-    title: 'Home',
-    roles: ['CLIENT', 'ADMIN'],
+    path: "/",
+    title: "Home",
+    roles: ["CLIENT", "ADMIN"],
   },
   {
-    path: '/client/sessions',
-    title: 'Sessions',
-    roles: ['CLIENT', 'ADMIN'],
+    path: "/client/sessions",
+    title: "Sessions",
+    roles: ["CLIENT", "ADMIN"],
   },
 ];
 export default routerRoutes;
