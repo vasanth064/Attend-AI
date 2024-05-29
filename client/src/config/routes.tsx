@@ -1,20 +1,30 @@
+import Layout from '@/components/Layout';
 import PrivateRoute from '@/components/PrivateRoute';
 import Admin from '@/pages/Admin';
 import Home from '@/pages/Home';
+import Sessions from '@/pages/Sessions';
 import Signin from '@/pages/Signin';
 import Signup from '@/pages/Signup';
-import { RouteObject, createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 interface Routes {
   path: string;
-  element: React.ReactNode;
-  children?: RouteObject[];
-  isPrivate?: boolean;
-  hidden?: boolean;
+  title: string;
+  roles: string[];
 }
-const routes = createBrowserRouter([
+export enum ROLES {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  CLIENT = 'CLIENT',
+  MACHINE = 'MACHINE',
+}
+const routerRoutes = createBrowserRouter([
   {
     path: '/',
-    element: <PrivateRoute />,
+    element: (
+      <Layout>
+        <PrivateRoute />
+      </Layout>
+    ),
     children: [
       {
         path: '/',
@@ -25,9 +35,16 @@ const routes = createBrowserRouter([
         path: '/admin',
         element: <Admin />
       }
+      {
+        path: '/client',
+        children: [
+          {
+            path: 'sessions',
+            element: <Sessions />,
+          },
+        ],
+      },
     ],
-    isPrivate: true,
-    hidden: true,
   },
   {
     path: '/signin',
@@ -38,6 +55,18 @@ const routes = createBrowserRouter([
     element: <Signup />,
   },
 
-] as Routes[]);
+]);
 
-export default routes;
+export const routes: Routes[] = [
+  {
+    path: '/',
+    title: 'Home',
+    roles: ['CLIENT', 'ADMIN'],
+  },
+  {
+    path: '/client/sessions',
+    title: 'Sessions',
+    roles: ['CLIENT', 'ADMIN'],
+  },
+];
+export default routerRoutes;
