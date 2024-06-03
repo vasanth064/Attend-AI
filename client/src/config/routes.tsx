@@ -5,7 +5,11 @@ import Home from "@/pages/Home";
 import Sessions from "@/pages/Sessions";
 import Signin from "@/pages/Signin";
 import Signup from "@/pages/Signup";
+import UserPage from "@/pages/UserPage";
+
+import UserEnrollmentsTable from "@/components/UserEnrollmentsTable";
 import { createBrowserRouter } from "react-router-dom";
+import UserAttendanceReport from "@/components/UserAttendanceReport";
 interface Routes {
   path: string;
   title: string;
@@ -34,6 +38,20 @@ const routerRoutes = createBrowserRouter([
       {
         path: "/admin",
         element: <Admin />,
+      },
+      {
+        path: "/user",
+        element: <UserPage />,
+        children: [
+          {
+            path: "enrollments",
+            element: <UserEnrollmentsTable />
+          },
+          {
+            path: "report",
+            element: <UserAttendanceReport />
+          },
+        ]
       },
       {
         path: "/client",
@@ -67,5 +85,25 @@ export const routes: Routes[] = [
     title: "Sessions",
     roles: ["CLIENT", "ADMIN"],
   },
+  {
+    path: "/admin",
+    title: "Admin",
+    roles: ["ADMIN"],
+  },
+  {
+    path: "/user",
+    title: "Home",
+    roles: ["USER"]
+  },
+  {
+    path: "/user/enrollments",
+    title: "Enrollments",
+    roles: ["USER"]
+  },
+  {
+    path: "/user/report",
+    title: "Report",
+    roles: ["USER"]
+  }
 ];
 export default routerRoutes;
