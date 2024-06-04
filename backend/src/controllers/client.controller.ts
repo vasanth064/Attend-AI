@@ -9,9 +9,9 @@ const createLink = catchAsync(async (req, res) => {
   if (!clientID) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Client ID is required');
   }
-  const { config } = req.body;
-  const newLink = await clientService.createLink(clientID, config);
-  res.status(httpStatus.CREATED).send({ newLink });
+  const { config, name } = req.body;
+  const newLink = await clientService.createLink(clientID, config, name);
+  res.status(httpStatus.CREATED).send(newLink);
 });
 
 const getInviteLinks = catchAsync(async (req, res) => {
@@ -21,7 +21,7 @@ const getInviteLinks = catchAsync(async (req, res) => {
   }
   console.log(clientID);
   const inviteLinks = await clientService.getInviteLinks(clientID);
-  res.status(httpStatus.OK).send({ inviteLinks });
+  res.status(httpStatus.OK).send(inviteLinks);
 });
 
 const getInviteLink = catchAsync(async (req, res) => {
@@ -31,7 +31,7 @@ const getInviteLink = catchAsync(async (req, res) => {
   }
   const { linkID } = req.params;
   const inviteLink = await clientService.getInviteLink(parseInt(linkID));
-  res.status(httpStatus.OK).send({ inviteLink });
+  res.status(httpStatus.OK).send(inviteLink);
 });
 
 const deleteLink = catchAsync(async (req, res) => {
