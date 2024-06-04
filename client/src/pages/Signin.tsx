@@ -30,7 +30,7 @@ const Signin = () => {
     }
   };
 
-  useEffect(() => {}, [email, password]);
+  useEffect(() => { }, [email, password]);
   return (
     <Card className='mx-auto max-w-sm'>
       <CardHeader>

@@ -217,10 +217,34 @@ const getSessionsByUserId = async (userId: number) => {
   return prisma.user.findUnique({
     where: { id: userId },
     select: {
-      Enrollments: true
+      Enrollments: {
+        select: {
+          session: true
+        }
+      }
     }
   });
 };
+const getLogs = async (user: User, body: { startTime: Date, endTime: Date }) => {
+  const res = await prisma.enrollment.findMany({
+    where: {
+      userID: user.id,
+      session: {
+        startDateTime: {
+          gte: body.startTime
+        },
+        endDateTime: {
+          lte: body.endTime
+        }
+      }
+    },
+    select: {
+      session: true,
+      AttendanceLogs: true
+    }
+  })
+  return res;
+}
 
 const userService = {
   createUser,
@@ -231,7 +255,8 @@ const userService = {
   deleteUserById,
   enrollUser,
   createUserWithDisabledStatus,
-  getSessionsByUserId
+  getSessionsByUserId,
+  getLogs
 };
 
 export default userService;

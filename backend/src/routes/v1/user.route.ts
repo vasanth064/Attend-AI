@@ -26,6 +26,7 @@ router
   .post(upload.single('file'), validate(userValidation.enrollUser), userController.enrollUser);
 router.route('/sessions').get(auth('tradUser'), userController.getSessions);
 
+router.route('/sessions/logs').post(auth('tradUser'), validate(userValidation.getLogs), userController.getLogs)
 export default router;
 
 /**

@@ -57,11 +57,19 @@ const enrollUser = {
     .pattern(/.+/, Joi.any())
 };
 
+const getLogs = {
+  body: Joi.object().keys({
+    startTime: Joi.date().required(),
+    endTime: Joi.date().required()
+  })
+}
+
 export default {
   createUser,
   getUsers,
   getUser,
   updateUser,
   deleteUser,
-  enrollUser
+  enrollUser,
+  getLogs
 };

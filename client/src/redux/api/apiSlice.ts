@@ -51,6 +51,7 @@ const refreshQuery: BaseQueryFn<
 
 export const apiSlice = createApi({
   baseQuery: refreshQuery,
+  tagTypes: ["AdminClientDetails"],
   /* eslint-disable @typescript-eslint/no-unused-vars */
   endpoints: (builder) => ({}),
   tagTypes: ['Session', 'Auth', 'InviteLink', 'Machine'],

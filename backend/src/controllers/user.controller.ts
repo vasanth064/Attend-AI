@@ -76,6 +76,12 @@ const deleteUser = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const getLogs = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  const result = await userService.getLogs(user, req.body);
+  res.status(httpStatus.OK).send(result);
+})
+
 export default {
   createUser,
   getUsers,
@@ -83,5 +89,6 @@ export default {
   updateUser,
   deleteUser,
   enrollUser,
-  getSessions
+  getSessions,
+  getLogs
 };
