@@ -179,10 +179,10 @@ const UserReportTable = ({ data, isLoading }: { data: ReportResponseObject[], is
             <TableBody>
               {data.map((d, index) => (
                 <TableRow key={index}>
-                  <TableCell className="font-medium">{isLoading ? <Skeleton className="h-[150px]" /> : d.session.name}</TableCell>
-                  <TableCell>{isLoading ? <Skeleton className="h-[150px]" /> : customDateFormat(d.session.startDateTime)}</TableCell>
-                  <TableCell>{isLoading ? <Skeleton className="h-[150px]" /> : customDateFormat(d.session.endDateTime)}</TableCell>
-                  <TableCell className="text-right">{isLoading ? <Skeleton className="h-[150px]" /> : getAttendanceStatus(d)}</TableCell>
+                  <TableCell className="font-medium">{isLoading ? <Skeleton className="h-[30px]" /> : d.session.name}</TableCell>
+                  <TableCell>{isLoading ? <Skeleton className="h-[30px]" /> : customDateFormat(d.session.startDateTime)}</TableCell>
+                  <TableCell>{isLoading ? <Skeleton className="h-[30px]" /> : customDateFormat(d.session.endDateTime)}</TableCell>
+                  <TableCell className="text-right">{isLoading ? <Skeleton className="h-[30px]" /> : getAttendanceStatus(d)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
