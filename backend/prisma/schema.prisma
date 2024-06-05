@@ -15,6 +15,7 @@ model InviteConfig {
   clientID Int
   config   Json
   client   Client @relation(fields: [clientID], references: [id], onDelete: Cascade)
+  name     String @db.VarChar(255)
 }
 
 model Client {

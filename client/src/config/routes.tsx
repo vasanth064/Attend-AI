@@ -1,14 +1,17 @@
-import Layout from "@/components/Layout";
-import PrivateRoute from "@/components/PrivateRoute";
+import Layout from '@/components/Layout';
+import PrivateRoute from '@/components/PrivateRoute';
+import CreateInvite from '@/pages/CreateInvite';
+import Home from '@/pages/Home';
+import InviteForm from '@/pages/InviteForm';
+import Invites from '@/pages/Invites';
+import Machines from '@/pages/Machines';
+import Sessions from '@/pages/Sessions';
+import Signin from '@/pages/Signin';
+import Signup from '@/pages/Signup';
+import { createBrowserRouter } from 'react-router-dom';
 import Admin from "@/pages/Admin";
-import Home from "@/pages/Home";
-import Sessions from "@/pages/Sessions";
-import Signin from "@/pages/Signin";
-import Signup from "@/pages/Signup";
 import UserPage from "@/pages/UserPage";
-
 import UserEnrollmentsTable from "@/components/UserEnrollmentsTable";
-import { createBrowserRouter } from "react-router-dom";
 import UserAttendanceReport from "@/components/UserAttendanceReport";
 interface Routes {
   path: string;
@@ -60,6 +63,22 @@ const routerRoutes = createBrowserRouter([
             path: "sessions",
             element: <Sessions />,
           },
+          {
+            path: 'invites',
+            element: <Invites />,
+          },
+          {
+            path: 'machines',
+            element: <Machines />,
+          },
+          {
+            path: 'invites/create',
+            element: <CreateInvite />,
+          },
+          {
+            path: 'invites/:id',
+            element: <InviteForm previewMode={false} />,
+          },
         ],
       },
     ],
@@ -84,6 +103,16 @@ export const routes: Routes[] = [
     path: "/client/sessions",
     title: "Sessions",
     roles: ["CLIENT", "ADMIN"],
+  },
+  {
+    path: '/client/invites',
+    title: 'Invites',
+    roles: ['CLIENT', 'ADMIN'],
+  },
+  {
+    path: '/client/machines',
+    title: 'Machines',
+    roles: ['CLIENT', 'ADMIN'],
   },
   {
     path: "/admin",

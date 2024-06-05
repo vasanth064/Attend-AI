@@ -12,20 +12,32 @@ export interface Session extends CreateSession {
 
 export const sessionsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    createSession: builder.mutation<Session, CreateSession>({
+      query: ({ name, startDateTime, endDateTime }) => ({
+        url: '/client/session',
+        method: 'POST',
+        body: {
+          name,
+          startDateTime,
+          endDateTime,
+        },
+        transformResponse: (response: {
+          data: {
+            session: Session;
+          };
+        }) => response.data.session,
+      }),
+    }),
     getSessions: builder.query<Session[], void>({
       query: () => ({
         url: '/client/session/',
         method: 'GET',
       }),
-      // transformResponse: (response: {
-      //   data: {
-      //     sessions: Session[];
-      //   };
-      // }) => response.data.sessions,
+      transformResponse: ({ sessions }) => sessions,
     }),
     getSession: builder.query<Session, string>({
       query: (id) => ({
-        url: `/client/sessions/${id}`,
+        url: `/client/session/${id}`,
         method: 'GET',
         transformResponse: (response: {
           data: {
@@ -36,7 +48,7 @@ export const sessionsApiSlice = apiSlice.injectEndpoints({
     }),
     updateSession: builder.mutation<void, Session & { id: string }>({
       query: ({ id, ...session }) => ({
-        url: `/client/sessions/${id}`,
+        url: `/client/session/${id}`,
         method: 'PUT',
         body: session,
         transformResponse: (response: {
@@ -48,14 +60,30 @@ export const sessionsApiSlice = apiSlice.injectEndpoints({
     }),
     deleteSession: builder.mutation<void, string>({
       query: (id) => ({
-        url: `/client/sessions/${id}`,
+        url: `/client/session/${id}`,
         method: 'DELETE',
       }),
     }),
   }),
 });
 
+apiSlice.enhanceEndpoints({
+  addTagTypes: ['Session'],
+  endpoints: {
+    createSession: {
+      invalidatesTags: ['Session'],
+    },
+    getSessions: {
+      providesTags: ['Session'],
+    },
+    deleteSession: {
+      invalidatesTags: ['Session'],
+    },
+  },
+});
+
 export const {
+  useCreateSessionMutation,
   useGetSessionsQuery,
   useGetSessionQuery,
   useUpdateSessionMutation,

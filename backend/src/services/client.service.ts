@@ -14,11 +14,16 @@ interface Config {
   options?: any[];
 }
 
-const createLink = async (clientID: number, config: Config[]): Promise<InviteConfig> => {
+const createLink = async (
+  clientID: number,
+  config: Config[],
+  name: string
+): Promise<InviteConfig> => {
   const newLink = await prisma.inviteConfig.create({
     data: {
       clientID: clientID,
-      config: JSON.stringify(config)
+      config: JSON.stringify(config),
+      name
     }
   });
   return newLink;

@@ -1,10 +1,9 @@
-import { describe, beforeEach, beforeAll, test, expect, jest } from '@jest/globals';
-import setupTestDB from '../utils/setupTestDb';
+import { describe, beforeAll, test, expect, jest } from '@jest/globals';
 
 import { faker } from '@faker-js/faker';
 import { authService } from '../../src/services';
 import userService from '../../src/services/user.service';
-import { userOne, admin, insertUsers } from '../fixtures/user.fixture';
+import { admin } from '../fixtures/user.fixture';
 import ApiError from '../../src/utils/ApiError';
 import httpStatus from 'http-status';
 
@@ -29,10 +28,37 @@ jest.mock('../../src/client', () => ({
 
 jest.mock('../../src/utils/encryption');
 
+jest.mock('../../src/config/config', () => ({
+  env: 'test',
+  port: 3000,
+  jwt: {
+    secret: 'your_mocked_jwt_secret',
+    accessExpirationMinutes: 30,
+    refreshExpirationDays: 30,
+    resetPasswordExpirationMinutes: 10,
+    verifyEmailExpirationMinutes: 10
+  },
+  email: {
+    smtp: {
+      host: 'smtp.example.com',
+      port: 25,
+      auth: {
+        user: 'username',
+        pass: 'password'
+      }
+    },
+    from: 'noreply@example.com'
+  },
+  orion: {
+    url: 'https://orion.example.com',
+    apiKey: 'your_mocked_orion_api_key'
+  }
+}));
+
 import { User, UserType } from '@prisma/client';
 
 describe('Auth service module', () => {
-  let sampleUser: User = {
+  const sampleUser: User = {
     id: 1,
     email: 'existing@example.com',
     name: 'John Doe',
@@ -41,9 +67,11 @@ describe('Auth service module', () => {
     clientID: null,
     password: 'hashedPassword'
   } as User;
-  beforeAll(async () => { });
-  afterEach(() => {
+  beforeAll(async () => {
+    process.env.JWT_SECRET = 'your_mocked_jwt_secret';
+  });
 
+  afterEach(() => {
     jest.resetAllMocks();
   });
 
@@ -108,6 +136,7 @@ describe('Auth service module', () => {
       // prismaMock.user.create.mockResolvedValueOnce(sampleUser);
       jest.spyOn(userService, 'getUserByEmail').mockResolvedValueOnce(sampleUser);
       jest.spyOn(authService, 'isPasswordMatch').mockResolvedValueOnce(true);
+
       const user = await authService.loginUserWithEmailAndPassword(
         sampleUser.email,
         sampleUser.password

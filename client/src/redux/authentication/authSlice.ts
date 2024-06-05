@@ -5,10 +5,11 @@ export interface User {
   name: string;
   email: string;
   clientID: string | null;
-  userData: string;
+  userData: string | null;
   userType: string;
   status: string;
 }
+
 export interface Tokens {
   access: {
     token: string;

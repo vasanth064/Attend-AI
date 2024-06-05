@@ -1,10 +1,10 @@
-import SessionsList from '@/redux/sessions/SessionsList';
+import MachineList from '@/redux/machine/MachineList';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import CreateSession from '@/redux/sessions/CreateSession';
 import { useState } from 'react';
+import CreateMachine from '@/redux/machine/CreateMachine';
 
-const Sessions = () => {
+const Machines = () => {
   const [dialogStatus, setDialogStatus] = useState<boolean>(false);
   function toggleDialogStatus() {
     setDialogStatus(!dialogStatus);
@@ -13,18 +13,18 @@ const Sessions = () => {
     <div>
       <Dialog open={dialogStatus} onOpenChange={toggleDialogStatus}>
         <div className='flex justify-between items-center py-4'>
-          <h1 className='text-2xl font-bold'>Sessions</h1>
+          <h1 className='text-2xl font-bold'>Machines</h1>
           <DialogTrigger asChild>
             <Button variant='default' size='sm' onClick={toggleDialogStatus}>
-              Create Session
+              Create Machine
             </Button>
           </DialogTrigger>
         </div>
-        <SessionsList />
-        <CreateSession toggleDialogStatus={toggleDialogStatus} />
+        <MachineList />
+        <CreateMachine toggleDialogStatus={toggleDialogStatus} />
       </Dialog>
     </div>
   );
 };
 
-export default Sessions;
+export default Machines;

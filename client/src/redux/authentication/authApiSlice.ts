@@ -8,7 +8,7 @@ interface AuthResponse {
   user: User;
   tokens: Tokens;
 }
-interface SignupRequest {
+export interface SignupRequest {
   email: string;
   password: string;
   name: string;
