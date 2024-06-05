@@ -1,18 +1,38 @@
-import { describe, beforeEach, beforeAll, test, expect, jest } from '@jest/globals';
-import setupTestDB from '../utils/setupTestDb';
+import { describe, beforeEach, test, expect, jest } from '@jest/globals';
 
-import { faker } from '@faker-js/faker';
-import { authService, userService } from '../../src/services';
+import { userService } from '../../src/services';
 import { adminService } from '../../src/services';
-import { userOne, admin, insertUsers } from '../fixtures/user.fixture';
-import ApiError from '../../src/utils/ApiError';
-import httpStatus from 'http-status';
 
 import prisma from '../../src/client';
 import { User, Client, Prisma } from '@prisma/client';
 jest.mock('../../src/utils/encryption');
 
-// jest.mock("../../src/client");
+jest.mock('../../src/config/config', () => ({
+  env: 'test',
+  port: 3000,
+  jwt: {
+    secret: 'your_mocked_jwt_secret',
+    accessExpirationMinutes: 30,
+    refreshExpirationDays: 30,
+    resetPasswordExpirationMinutes: 10,
+    verifyEmailExpirationMinutes: 10
+  },
+  email: {
+    smtp: {
+      host: 'smtp.example.com',
+      port: 25,
+      auth: {
+        user: 'username',
+        pass: 'password'
+      }
+    },
+    from: 'noreply@example.com'
+  },
+  orion: {
+    url: 'https://orion.example.com',
+    apiKey: 'your_mocked_orion_api_key'
+  }
+}));
 
 jest.mock('../../src/client', () => ({
   __esModule: true,
