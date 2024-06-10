@@ -19,16 +19,11 @@ const getInviteLinks = catchAsync(async (req, res) => {
   if (!clientID) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Client ID is required');
   }
-  console.log(clientID);
   const inviteLinks = await clientService.getInviteLinks(clientID);
   res.status(httpStatus.OK).send(inviteLinks);
 });
 
 const getInviteLink = catchAsync(async (req, res) => {
-  const { clientID } = req.user as User;
-  if (!clientID) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Client ID is required');
-  }
   const { linkID } = req.params;
   const inviteLink = await clientService.getInviteLink(parseInt(linkID));
   res.status(httpStatus.OK).send(inviteLink);

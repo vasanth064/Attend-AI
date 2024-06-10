@@ -18,7 +18,7 @@ router
 router
   .route('/link/:linkID')
   .delete(auth('manageInviteLinks'), clientController.deleteLink)
-  .get(auth('manageInviteLinks'), clientController.getInviteLink);
+  .get(clientController.getInviteLink);
 
 router
   .route('/approve-users')
