@@ -7,5 +7,6 @@ module.exports = {
   restoreMocks: true,
   coveragePathIgnorePatterns: ['node_modules', 'src/config', 'src/app.ts', 'tests'],
   coverageReporters: ['text', 'lcov', 'clover', 'html'],
-  testPathIgnorePatterns: ['tests/integration/']
+  testPathIgnorePatterns: ['tests/integration/'],
+  setupFilesAfterEnv: ['<rootDir>/src/singleton.ts'],
 };

@@ -81,7 +81,6 @@ describe('Auth service module', () => {
       name: faker.name.fullName(),
       userType: UserType.USER
     } as User;
-
     jest.spyOn(prisma.user, 'create').mockResolvedValueOnce(n);
     const newUser = await userService.createUser(n.email, n.password, n.name);
 

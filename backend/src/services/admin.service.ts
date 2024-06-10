@@ -5,9 +5,16 @@ import userService from './user.service';
 
 import { encryptPassword } from '../utils/encryption';
 
+const createClientObject = async (name: string) => {
+  return await prisma.client.create({
+    data: {
+      name: name
+    }
+  })
+}
+
 const createClient = async (
-  email: string,
-  password: string,
+  email: string, password: string,
   name: string,
   userData: unknown = {}
 ): Promise<User> => {
@@ -16,11 +23,7 @@ const createClient = async (
     throw new Error('A type of user already exists with this email');
   }
 
-  const newClientObject = await prisma.client.create({
-    data: {
-      name: name
-    }
-  });
+  const newClientObject = await adminService.createClientObject(name);
   const newUser = await prisma.user.create({
     data: {
       email: email,
@@ -35,15 +38,15 @@ const createClient = async (
   return newUser;
 };
 
-const getClientUserById = async <Key extends keyof User>(
-  clientId: number,
-  keys: Key[] = ['id', 'email', 'name', 'password', 'userType'] as Key[]
-): Promise<Pick<User, Key> | null> => {
-  return (await prisma.user.findUnique({
-    where: { id: clientId },
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
-  })) as Pick<User, Key> | null;
-};
+// const getClientUserById = async <Key extends keyof User>(
+//   clientId: number,
+//   keys: Key[] = ['id', 'email', 'name', 'password', 'userType'] as Key[]
+// ): Promise<Pick<User, Key> | null> => {
+//   return (await prisma.user.findUnique({
+//     where: { id: clientId },
+//     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
+//   })) as Pick<User, Key> | null;
+// };
 
 const getClientById = async (clientId: number) => {
   return await prisma.client.findUnique({ where: { id: clientId } });
@@ -66,22 +69,21 @@ const getClientUserByClientId = async (clientId: number) => {
 };
 
 
-const deleteClient = async (clientId: number): Promise<void> => {
-  // Delete the sessions
-  const client = await adminService.getClientById(clientId);
-  const clientUser = await adminService.getClientUserByClientId(clientId);
-  if (!client) {
-    throw new Error('Client not found');
-  }
-  if (clientUser.userType !== UserType.CLIENT) {
-    throw new Error('Only clients be managed');
-  }
-  if (!clientUser.clientID) {
-    throw new Error('Client does not have a clientID');
-  }
+const deleteClientHelper = async (clientId: number) => {
   await prisma.$transaction(async (tx) => {
     await tx.client.delete({ where: { id: clientId } });
   })
+}
+
+const deleteClient = async (clientId: number): Promise<void> => {
+  // Delete the sessions
+  const client = await adminService.getClientById(clientId);
+  await adminService.getClientUserByClientId(clientId);
+  if (!client) {
+    throw new Error('Client not found');
+  }
+
+  await adminService.deleteClientHelper(clientId);
 };
 
 const getAllClients = async () => {
@@ -91,10 +93,12 @@ const getAllClients = async () => {
 const adminService = {
   createClient,
   deleteClient,
-  getClientUserById,
+  // getClientUserById,
   getClientById,
   getClientUserByClientId,
   getAllClients,
+  createClientObject,
+  deleteClientHelper
 };
 
 export default adminService;
