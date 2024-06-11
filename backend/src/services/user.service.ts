@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
 import { encryptPassword } from '../utils/encryption';
-import orionRequest from '../utils/orionRequest';
+import * as orionRequest from '../utils/orionRequest';
 
 /**
  * Get user by email
@@ -87,39 +87,6 @@ const createUserWithDisabledStatus = async (
 };
 
 /**
- * Query for users
- * @param {Object} filter - Prisma filter
- * @param {Object} options - Query options
- * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
- * @param {number} [options.limit] - Maximum number of results per page (default = 10)
- * @param {number} [options.page] - Current page (default = 1)
- * @returns {Promise<QueryResult>}
- */
-const queryUsers = async <Key extends keyof User>(
-  filter: object,
-  options: {
-    limit?: number;
-    page?: number;
-    sortBy?: string;
-    sortType?: 'asc' | 'desc';
-  },
-  keys: Key[] = ['id', 'email', 'name', 'password', 'userType'] as Key[]
-): Promise<Pick<User, Key>[]> => {
-  const page = options.page ?? 1;
-  const limit = options.limit ?? 10;
-  const sortBy = options.sortBy;
-  const sortType = options.sortType ?? 'desc';
-  const users = await prisma.user.findMany({
-    where: filter,
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {}),
-    skip: page * limit,
-    take: limit,
-    orderBy: sortBy ? { [sortBy]: sortType } : undefined
-  });
-  return users as Pick<User, Key>[];
-};
-
-/**
  * Get user by id
  * @param {ObjectId} id
  * @param {Array<Key>} keys
@@ -133,32 +100,6 @@ const getUserById = async <Key extends keyof User>(
     where: { id },
     select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
   }) as Promise<Pick<User, Key> | null>;
-};
-
-/**
- * Update user by id
- * @param {ObjectId} userId
- * @param {Object} updateBody
- * @returns {Promise<User>}
- */
-const updateUserById = async <Key extends keyof User>(
-  userId: number,
-  updateBody: Prisma.UserUpdateInput,
-  keys: Key[] = ['id', 'email', 'name', 'userType'] as Key[]
-): Promise<Pick<User, Key> | null> => {
-  const user = await userService.getUserById(userId, ['id', 'email', 'name']);
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
-  }
-  if (updateBody.email && (await userService.getUserByEmail(updateBody.email as string))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
-  }
-  const updatedUser = await prisma.user.update({
-    where: { id: user.id },
-    data: updateBody,
-    select: keys.reduce((obj, k) => ({ ...obj, [k]: true }), {})
-  });
-  return updatedUser as Pick<User, Key> | null;
 };
 
 /**
@@ -183,7 +124,7 @@ const enrollUser = async (
   userData: unknown = {},
   filePath: string
 ) => {
-  const result = await orionRequest(filePath, email);
+  const result = await orionRequest.orionRequest(filePath, email);
 
   if (result.statusCode !== 200) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Orion request failed');
@@ -206,7 +147,7 @@ const enrollUser = async (
   if (userFound) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      `User already exists with a different roll number ${user?.email}`
+      `User already exists with a the email ${user?.email}`
     );
   }
 
@@ -242,16 +183,14 @@ const getLogs = async (user: User, body: { startTime: Date, endTime: Date }) => 
       session: true,
       AttendanceLogs: true
     }
-  })
+  });
   return res;
-}
+};
 
 const userService = {
   createUser,
-  queryUsers,
   getUserById,
   getUserByEmail,
-  updateUserById,
   deleteUserById,
   enrollUser,
   createUserWithDisabledStatus,
@@ -261,4 +200,4 @@ const userService = {
 
 export default userService;
 
-export { createUser, queryUsers, getUserById, getUserByEmail, updateUserById, deleteUserById };
+export { createUser, getUserById, getUserByEmail, deleteUserById };

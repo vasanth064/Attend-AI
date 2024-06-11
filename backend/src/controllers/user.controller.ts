@@ -11,13 +11,6 @@ const createUser = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(user);
 });
 
-const getUsers = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name', 'role']);
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const result = await userService.queryUsers(filter, options);
-  res.send(result);
-});
-
 const getUser = catchAsync(async (req, res) => {
   const user = await userService.getUserById(req.params.userId);
   if (!user) {
@@ -66,10 +59,7 @@ const getSessions = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(sessions);
 });
 
-const updateUser = catchAsync(async (req, res) => {
-  const user = await userService.updateUserById(req.params.userId, req.body);
-  res.send(user);
-});
+
 
 const deleteUser = catchAsync(async (req, res) => {
   await userService.deleteUserById(req.params.userId);
@@ -84,9 +74,7 @@ const getLogs = catchAsync(async (req, res) => {
 
 export default {
   createUser,
-  getUsers,
   getUser,
-  updateUser,
   deleteUser,
   enrollUser,
   getSessions,
