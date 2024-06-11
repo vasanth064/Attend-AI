@@ -5,6 +5,35 @@ import { Enrollment, Prisma, Session, User } from '@prisma/client';
 import ApiError from '../../src/utils/ApiError';
 import httpStatus from 'http-status';
 
+jest.mock('../../src/config/config', () => ({
+  env: 'test',
+  port: 3000,
+  jwt: {
+    secret: 'your_mocked_jwt_secret',
+    accessExpirationMinutes: 30,
+    refreshExpirationDays: 30,
+    resetPasswordExpirationMinutes: 10,
+    verifyEmailExpirationMinutes: 10
+  },
+  email: {
+    smtp: {
+      host: 'smtp.example.com',
+      port: 25,
+      auth: {
+        user: 'username',
+        pass: 'password'
+      }
+    },
+    from: 'noreply@example.com'
+  },
+  orion: {
+    url: 'https://orion.example.com',
+    apiKey: 'your_mocked_orion_api_key'
+  }
+}));
+
+
+
 describe('Client service module', () => {
   describe('Invite Link Module', () => {
     describe('Create Link', () => {
