@@ -1,5 +1,4 @@
 import { describe, beforeAll, test, expect, jest } from '@jest/globals';
-
 import { faker } from '@faker-js/faker';
 import { authService, tokenService } from '../../src/services';
 import userService from '../../src/services/user.service';
@@ -67,9 +66,7 @@ describe('Auth service module', () => {
     clientID: null,
     password: 'hashedPassword'
   } as User;
-  beforeAll(async () => {
-    process.env.JWT_SECRET = 'your_mocked_jwt_secret';
-  });
+  beforeAll(async () => {});
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -87,7 +84,6 @@ describe('Auth service module', () => {
     jest.spyOn(prisma.user, 'create').mockResolvedValueOnce(n);
     const newUser = await userService.createUser(n.email, n.password, n.name);
 
-    console.log(newUser);
     expect(newUser.userType).toBe('USER');
     expect(newUser.name).toBe(n.name);
   });

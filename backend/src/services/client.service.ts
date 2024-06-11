@@ -34,6 +34,9 @@ const getInviteLinks = async (clientID: number): Promise<InviteConfig[]> => {
       clientID: clientID
     }
   });
+  if (inviteLinks.length === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invite links not found');
+  }
   return inviteLinks;
 };
 
@@ -43,10 +46,21 @@ const getInviteLink = async (linkID: number): Promise<InviteConfig | null> => {
       id: linkID
     }
   });
+  if (!inviteLink) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invite link not found');
+  }
   return inviteLink;
 };
 
 const deleteLink = async (linkID: number): Promise<void> => {
+  const inviteLink = await prisma.inviteConfig.findUnique({
+    where: {
+      id: linkID
+    }
+  });
+  if (!inviteLink) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invite link not found');
+  }
   await prisma.inviteConfig.delete({
     where: {
       id: linkID
@@ -77,6 +91,9 @@ const getSessions = async (clientID: number): Promise<Session[]> => {
       clientID: clientID
     }
   });
+  if (sessions.length === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sessions not found');
+  }
   return sessions;
 };
 
@@ -86,10 +103,21 @@ const getSession = async (sessionID: number): Promise<Session | null> => {
       id: sessionID
     }
   });
+  if (!session) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Session not found');
+  }
   return session;
 };
 
 const deleteSession = async (sessionID: number): Promise<void> => {
+  const session = await prisma.session.findUnique({
+    where: {
+      id: sessionID
+    }
+  });
+  if (!session) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Session not found');
+  }
   await prisma.session.delete({
     where: {
       id: sessionID
@@ -103,6 +131,14 @@ const updateSession = async (
   startDateTime: Date,
   endDateTime: Date
 ): Promise<Session> => {
+  const session = await prisma.session.findUnique({
+    where: {
+      id: sessionID
+    }
+  });
+  if (!session) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Session not found');
+  }
   const updatedSession = await prisma.session.update({
     where: {
       id: sessionID
@@ -154,6 +190,9 @@ const getAllMachines = async (clientID: number): Promise<User[]> => {
       userType: UserType.MACHINE
     }
   });
+  if (machines.length === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Machines not found');
+  }
   return machines;
 };
 

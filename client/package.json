@@ -25,6 +25,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
+    "face-api.js": "^0.22.2",
     "localforage": "^1.10.0",
     "lucide-react": "^0.378.0",
     "match-sorter": "^6.3.4",
