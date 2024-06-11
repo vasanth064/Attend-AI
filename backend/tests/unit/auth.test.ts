@@ -1,7 +1,7 @@
 import { describe, beforeAll, test, expect, jest } from '@jest/globals';
 
 import { faker } from '@faker-js/faker';
-import { authService } from '../../src/services';
+import { authService, tokenService } from '../../src/services';
 import userService from '../../src/services/user.service';
 import { admin } from '../fixtures/user.fixture';
 import ApiError from '../../src/utils/ApiError';
@@ -55,7 +55,7 @@ jest.mock('../../src/config/config', () => ({
   }
 }));
 
-import { User, UserType } from '@prisma/client';
+import { Token, TokenType, User, UserType } from '@prisma/client';
 
 describe('Auth service module', () => {
   const sampleUser: User = {
@@ -176,5 +176,83 @@ describe('Auth service module', () => {
         new ApiError(httpStatus.NOT_FOUND, 'Not found')
       );
     });
+
+    test("should logout successfully", async () => {
+      const mockToken1: Token = {
+        id: 1,
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+        type: TokenType.REFRESH,
+        expires: new Date('2023-07-01T00:00:00Z'),
+        blacklisted: false,
+        userId: 1,
+        createdAt: new Date('2023-06-01T12:00:00Z'),
+      }
+      jest.spyOn(prisma.token, 'findFirst').mockResolvedValueOnce(mockToken1);
+
+      jest.spyOn(prisma.token, 'delete').mockResolvedValueOnce(mockToken1);
+
+      await authService.logout(mockToken1.token);
+      expect(prisma.token.delete).toHaveBeenCalledWith({
+        where: {
+          id: mockToken1.id
+        }
+      });
+
+    })
   });
+
+
+  describe("Refresh token module", () => {
+    const sampleToken = "token";
+    const mockToken1: Token = {
+      id: 1,
+      token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      type: TokenType.REFRESH,
+      expires: new Date('2023-07-01T00:00:00Z'),
+      blacklisted: false,
+      userId: 1,
+      createdAt: new Date('2023-06-01T12:00:00Z'),
+    }
+    const mockToken2: Token = {
+      id: 2,
+      token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      type: TokenType.REFRESH,
+      expires: new Date('2023-06-30T23:59:59Z'),
+      blacklisted: false,
+      userId: 2,
+      createdAt: new Date('2023-06-15T09:00:00Z'),
+    }
+
+
+
+    test("should throw an error if the token is not present", async () => {
+      jest.spyOn(tokenService, "verifyToken").mockImplementation(() => {
+        throw new Error("Error");
+      })
+      expect(authService.refreshAuth(sampleToken)).rejects.toEqual(
+        new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate')
+      )
+    })
+
+    test("should return new set of tokens after refreshing", async () => {
+      jest.spyOn(tokenService, "verifyToken").mockResolvedValueOnce(mockToken1);
+      jest.spyOn(prisma.token, "delete").mockResolvedValueOnce(mockToken1);
+      jest.spyOn(tokenService, "generateAuthTokens").mockResolvedValueOnce({
+        access: {
+          token: mockToken1.token,
+          expires: new Date()
+        },
+        refresh: {
+          token: mockToken2.token,
+          expires: mockToken2.expires
+        }
+      })
+
+      const res = await authService.refreshAuth(mockToken1.token);
+
+      expect(prisma.token.delete).toHaveBeenCalled()
+      expect(res.access).toHaveProperty("token");
+      expect(res.refresh).toHaveProperty("token");
+    })
+  })
 });

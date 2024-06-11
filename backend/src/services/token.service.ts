@@ -84,11 +84,11 @@ const verifyToken = async (token: string, type: TokenType): Promise<Token> => {
  */
 const generateAuthTokens = async (user: { id: number }): Promise<AuthTokensResponse> => {
   const accessTokenExpires = moment().add(config.jwt.accessExpirationMinutes, 'minutes');
-  const accessToken = generateToken(user.id, accessTokenExpires, TokenType.ACCESS);
+  const accessToken = tokenService.generateToken(user.id, accessTokenExpires, TokenType.ACCESS);
 
   const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
-  const refreshToken = generateToken(user.id, refreshTokenExpires, TokenType.REFRESH);
-  await saveToken(refreshToken, user.id, refreshTokenExpires, TokenType.REFRESH);
+  const refreshToken = tokenService.generateToken(user.id, refreshTokenExpires, TokenType.REFRESH);
+  await tokenService.saveToken(refreshToken, user.id, refreshTokenExpires, TokenType.REFRESH);
 
   return {
     access: {
@@ -130,11 +130,18 @@ const generateAuthTokens = async (user: { id: number }): Promise<AuthTokensRespo
 //   return verifyEmailToken;
 // };
 
-export default {
+const tokenService = {
   generateToken,
   saveToken,
   verifyToken,
   generateAuthTokens
-  // generateResetPasswordToken,
-  // generateVerifyEmailToken
-};
+}
+
+export default tokenService;
+
+export {
+  generateToken,
+  saveToken,
+  verifyToken,
+  generateAuthTokens
+}

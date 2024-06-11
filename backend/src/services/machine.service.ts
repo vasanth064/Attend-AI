@@ -1,10 +1,10 @@
 import prisma from '../client';
 import ApiError from '../utils/ApiError';
-import orionRequest from '../utils/orionRequest';
+import * as orionRequest from '../utils/orionRequest';
 import clientService from './client.service';
 
 const searchUser = async (filepath: string) => {
-  const result = await orionRequest(filepath);
+  const result = await orionRequest.orionRequest(filepath);
 
   if (result.statusCode !== 200) {
     throw new ApiError(400, 'Face not found in database');

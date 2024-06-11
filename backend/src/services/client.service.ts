@@ -23,7 +23,6 @@ const createLink = async (
     data: {
       clientID: clientID,
       config: JSON.stringify(config),
-      name
     }
   });
   return newLink;

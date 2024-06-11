@@ -37,4 +37,6 @@ const orionRequest = async (filename: string, transactionId?: string) => {
   return result;
 };
 
-export default orionRequest;
+export {
+  orionRequest
+};

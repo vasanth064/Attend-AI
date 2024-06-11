@@ -196,14 +196,7 @@ const UserAttendanceReport = () => {
   const [generateReport, { isLoading }] = useGenerateReportMutation();
   const [data, setData] = useState<ReportResponseObject[]>([]);
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "You submitted the following values:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+
     const res = await generateReport({ startTime: data.startTime, endTime: data.endTime });
     if (res.error) {
       toast({
@@ -212,6 +205,12 @@ const UserAttendanceReport = () => {
         description: (res.error as SerializedError).message
       })
       return;
+    }
+    if (res.data.length === 0) {
+      toast({
+        title: "Message",
+        description: "The"
+      })
     }
     if (res.data)
       setData(res.data);
