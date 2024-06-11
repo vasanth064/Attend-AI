@@ -20,15 +20,27 @@ import { useParams } from 'react-router-dom';
 interface InviteFormProps {
   previewMode: boolean;
   handleSubmit?: (e: React.FormEvent<HTMLFormElement>) => void | undefined;
+  inviteId?: string;
+  children?: React.ReactNode;
 }
 
 const InviteForm: React.FC<InviteFormProps> = ({
   previewMode,
   handleSubmit,
+  inviteId,
+  children,
 }) => {
-  const { id } = useParams();
-  const { data, isLoading } = useGetInviteQuery(String(id));
+  let id = inviteId;
+  if (previewMode) {
+    const { inviteId } = useParams();
+    id = String(inviteId);
+  }
+  if (!id) {
+    return <div>Invite ID is required</div>;
+  }
 
+  const { data, isLoading } = useGetInviteQuery(id);
+  console.log(data);
   if (isLoading) return <div>Loading...</div>;
   return (
     data && (
@@ -87,9 +99,12 @@ const InviteForm: React.FC<InviteFormProps> = ({
           )}
         </div>
         {!previewMode && (
-          <Button type='submit' className='w-full'>
-            Submit
-          </Button>
+          <>
+            {children}
+            <Button type='submit' className='w-full'>
+              Submit
+            </Button>
+          </>
         )}
       </form>
     )
