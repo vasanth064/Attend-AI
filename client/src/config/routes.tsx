@@ -1,36 +1,37 @@
-import Layout from '@/components/Layout';
-import PrivateRoute from '@/components/PrivateRoute';
-import CreateInvite from '@/pages/CreateInvite';
-import Home from '@/pages/Home';
-import InviteForm from '@/pages/InviteForm';
-import Invites from '@/pages/Invites';
-import Machines from '@/pages/Machines';
-import Sessions from '@/pages/Sessions';
-import Signin from '@/pages/Signin';
-import Signup from '@/pages/Signup';
-import { createBrowserRouter } from 'react-router-dom';
-import Admin from '@/pages/Admin';
-import UserPage from '@/pages/UserPage';
-import UserEnrollmentsTable from '@/components/UserEnrollmentsTable';
-import UserAttendanceReport from '@/components/UserAttendanceReport';
-import InviteLink from '@/pages/InviteLink';
-import SessionView from '@/pages/SessionView';
-import MachinePage from '@/pages/MachinePage';
-import MachineAttendance from '@/pages/MachineAttendance';
+import Layout from "@/components/Layout";
+import PrivateRoute from "@/components/PrivateRoute";
+import CreateInvite from "@/pages/CreateInvite";
+import Home from "@/pages/Home";
+import InviteForm from "@/pages/InviteForm";
+import Invites from "@/pages/Invites";
+import Machines from "@/pages/Machines";
+import Sessions from "@/pages/Sessions";
+import Signin from "@/pages/Signin";
+import Signup from "@/pages/Signup";
+import { createBrowserRouter } from "react-router-dom";
+import Admin from "@/pages/Admin";
+import UserPage from "@/pages/UserPage";
+import UserEnrollmentsTable from "@/components/UserEnrollmentsTable";
+import UserAttendanceReport from "@/components/UserAttendanceReport";
+import InviteLink from "@/pages/InviteLink";
+import SessionView from "@/pages/SessionView";
+import MachinePage from "@/pages/MachinePage";
+import MachineAttendance from "@/pages/MachineAttendance";
+import ManageInviteLinkSignup from "@/pages/ManageInviteLinkSignup";
 interface Routes {
   path: string;
   title: string;
   roles: string[];
 }
 export enum ROLES {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-  CLIENT = 'CLIENT',
-  MACHINE = 'MACHINE',
+  ADMIN = "ADMIN",
+  USER = "USER",
+  CLIENT = "CLIENT",
+  MACHINE = "MACHINE",
 }
 const routerRoutes = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: (
       <Layout>
         <PrivateRoute />
@@ -38,126 +39,134 @@ const routerRoutes = createBrowserRouter([
     ),
     children: [
       {
-        path: '/',
+        path: "/",
         index: true,
         element: <Home />,
       },
       {
-        path: '/admin',
+        path: "/admin",
         element: <Admin />,
       },
       {
-        path: '/user',
+        path: "/user",
         element: <UserPage />,
         children: [
           {
-            path: 'enrollments',
+            path: "enrollments",
             element: <UserEnrollmentsTable />,
           },
           {
-            path: 'report',
+            path: "report",
             element: <UserAttendanceReport />,
           },
         ],
       },
       {
-        path: '/client',
+        path: "/client",
         children: [
           {
-            path: 'sessions',
+            path: "sessions",
             element: <Sessions />,
           },
           {
-            path: 'sessions/:id',
-            element: <SessionView />
+            path: "sessions/:id",
+            element: <SessionView />,
           },
           {
-            path: 'invites',
+            path: "invites",
             element: <Invites />,
           },
           {
-            path: 'machines',
+            path: "machines",
             element: <Machines />,
           },
           {
-            path: 'invites/create',
+            path: "invites/create",
             element: <CreateInvite />,
           },
           {
-            path: 'invites/:inviteId',
+            path: "invites/:inviteId",
             element: <InviteForm previewMode={true} />,
+          },
+          {
+            path: "invites/:inviteId/manage",
+            element: <ManageInviteLinkSignup mode="manage" />,
+          },
+          {
+            path: "invites/:inviteId/view",
+            element: <ManageInviteLinkSignup mode="view" />,
           },
         ],
       },
       {
-        path: 'machine',
-        element: <MachinePage />
+        path: "machine",
+        element: <MachinePage />,
       },
       {
-        path: 'machine/mark/:id',
-        element: <MachineAttendance />
-      }
+        path: "machine/mark/:id",
+        element: <MachineAttendance />,
+      },
     ],
   },
   {
-    path: '/invite/:inviteId',
+    path: "/invite/:inviteId",
     element: <InviteLink />,
   },
   {
-    path: '/signin',
+    path: "/signin",
     element: <Signin />,
   },
   {
-    path: '/signup',
+    path: "/signup",
     element: <Signup />,
   },
 ]);
 
 export const routes: Routes[] = [
   {
-    path: '/',
-    title: 'Home',
-    roles: ['CLIENT', 'ADMIN'],
+    path: "/",
+    title: "Home",
+    roles: ["CLIENT", "ADMIN"],
   },
   {
-    path: '/client/sessions',
-    title: 'Sessions',
-    roles: ['CLIENT', 'ADMIN'],
+    path: "/client/sessions",
+    title: "Sessions",
+    roles: ["CLIENT", "ADMIN"],
   },
   {
-    path: '/client/invites',
-    title: 'Invites',
-    roles: ['CLIENT', 'ADMIN'],
+    path: "/client/invites",
+    title: "Invites",
+    roles: ["CLIENT", "ADMIN"],
   },
   {
-    path: '/client/machines',
-    title: 'Machines',
-    roles: ['CLIENT', 'ADMIN'],
+    path: "/client/machines",
+    title: "Machines",
+    roles: ["CLIENT", "ADMIN"],
   },
   {
-    path: '/admin',
-    title: 'Admin',
-    roles: ['ADMIN'],
+    path: "/admin",
+    title: "Admin",
+    roles: ["ADMIN"],
   },
   {
-    path: '/user',
-    title: 'Home',
-    roles: ['USER'],
+    path: "/user",
+    title: "Home",
+    roles: ["USER"],
   },
   {
-    path: '/user/enrollments',
-    title: 'Enrollments',
-    roles: ['USER'],
+    path: "/user/enrollments",
+    title: "Enrollments",
+    roles: ["USER"],
   },
   {
-    path: '/user/report',
-    title: 'Report',
-    roles: ['USER'],
+    path: "/user/report",
+    title: "Report",
+    roles: ["USER"],
   },
   {
-    path: '/machine',
-    title: 'Home',
-    roles: ['MACHINE']
-  }
+    path: "/machine",
+    title: "Home",
+    roles: ["MACHINE"],
+  },
 ];
 export default routerRoutes;

@@ -32,6 +32,13 @@ const createLink = {
   })
 };
 
+const invitedUsers = {
+  query: Joi.object().keys({
+    inviteId: Joi.number().required(),
+    status: Joi.string().valid('ENABLED', 'DISABLED').required()
+  })
+};
+
 const session = {
   body: Joi.object().keys({
     name: Joi.string().required(),
@@ -73,5 +80,6 @@ export default {
   createMachine,
   deleteMachine,
   enrollUserToSession,
+  invitedUsers,
   approveUserCreation
 };

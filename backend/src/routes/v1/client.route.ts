@@ -21,7 +21,12 @@ router
   .get(clientController.getInviteLink);
 
 router
-  .route('/approve-users')
+  .route('/invitedUsers')
+  .get(
+    auth('manageInviteLinks'),
+    validate(clientValidation.invitedUsers),
+    clientController.getAllInvitedUsers
+  )
   .post(
     auth('manageUsers'),
     validate(clientValidation.approveUserCreation),
@@ -30,7 +35,7 @@ router
 
 router
   .route('/session')
-  .post(auth('manageSessions'), validate(clientValidation.session), clientController.createSession)
+  .post(auth('manageSessions'), clientController.createSession)
   .get(auth('manageSessions'), clientController.getSessions);
 
 router
