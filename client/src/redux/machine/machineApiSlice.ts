@@ -2,6 +2,23 @@ import { apiSlice } from '../api/apiSlice';
 import { SignupRequest } from '../authentication/authApiSlice';
 import { User } from '../authentication/authSlice';
 
+export interface Session {
+  id: number;
+  name: string;
+  startDateTime: Date;
+  endDateTime: Date;
+  clientID: number;
+};
+
+export interface MarkAttendanceResponse {
+  message: string;
+  id: number;
+  enrollmentID: number;
+  attendanceMarkedAt: Date;
+  user: any;
+  imgUrl: string;
+}
+
 export const machineApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getMachines: builder.query<User[], void>({
@@ -28,6 +45,30 @@ export const machineApiSlice = apiSlice.injectEndpoints({
         }) => response.data.machine,
       }),
     }),
+
+    getSessionsForMachine: builder.query<Session[], void>({
+      query: () => ({
+        url: '/machine/getLogs',
+        method: 'GET',
+      }),
+      transformResponse: (response: { sessions: Session[] }) => response.sessions,
+    }),
+    markAttendance: builder.mutation<MarkAttendanceResponse, { sessionID: string, file: Blob }>({
+      query: ({ sessionID, file }) => {
+        let formData = new FormData();
+        formData.append("sessionID", sessionID);
+        formData.append("file", file);
+
+        return {
+          url: '/machine/markAttendance',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data;'
+          },
+          formData: true
+        }
+      }
+    })
   }),
 });
 
@@ -50,4 +91,6 @@ export const {
   useCreateMachineMutation,
   useGetMachinesQuery,
   useDeleteMachineMutation,
+  useGetSessionsForMachineQuery,
+  useMarkAttendanceMutation
 } = machineApiSlice;

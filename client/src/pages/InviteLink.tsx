@@ -2,7 +2,7 @@ import FaceDetector from '@/components/FaceDetector';
 import InviteForm from './InviteForm';
 import { useParams } from 'react-router-dom';
 import Layout from '@/components/Layout';
-import { useState } from 'react';
+import { BaseSyntheticEvent, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -50,8 +50,14 @@ const InviteLink = () => {
       <Layout header={false}>
         <InviteForm
           previewMode={false}
-          handleSubmit={(data) => {
-            console.log(data);
+          handleSubmit={(e: BaseSyntheticEvent) => {
+            e.preventDefault();
+            const body: Record<string, unknown> = {};
+            for (let i = 0; i < e.target.length - 1; i++) {
+              body[e.target[i].name] = e.target[i].value;
+            }
+            const file = base64toBlob(userFace);
+            console.log(body, file);
           }}
           inviteId={inviteId}>
           {userFace == '' && (

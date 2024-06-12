@@ -18,6 +18,8 @@ const searchSchema = Joi.object().keys({
   })
 });
 
+router.get('/getLogs', auth('markAttendance'), machineController.upcomingSessions)
+
 router
   .route('/')
   .post(
@@ -25,6 +27,7 @@ router
     upload.single('file'),
     validate(searchSchema),
     machineController.markAttendance
-  );
+  )
+
 
 export default router;

@@ -62,8 +62,22 @@ const markAttendance = async (sessionID: number, filepath: string) => {
   return { ...log, user, imgUrl };
 };
 
+const upComingSessions = async (clientId: number) => {
+  const date = new Date();
+  const sessions = await prisma.session.findMany({
+    where: {
+      clientID: clientId,
+      startDateTime: {
+        gte: date
+      }
+    },
+  })
+  return sessions;
+}
+
 const machineService = {
-  markAttendance
+  markAttendance,
+  upComingSessions
 };
 
 export default machineService;

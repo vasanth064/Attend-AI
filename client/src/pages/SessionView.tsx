@@ -1,3 +1,4 @@
+import { useParams } from "react-router-dom";
 import { useGenerateReportMutation } from "@/redux/users/userApiSlice";
 import { z } from "zod"
 import { ReportResponseObject } from "@/redux/users/userApiSlice"
@@ -35,7 +36,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/use-toast"
 import { SerializedError } from "@reduxjs/toolkit";
-import { Skeleton } from "./ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const customDateFormat = (date: Date) => {
   return (new Date(date)).toLocaleDateString() +
@@ -66,8 +67,6 @@ const ReportForm = ({ cb }: { cb: (data: { startTime: Date, endTime: Date }) => 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   })
-
-
 
   return (
     <Form {...form}>
@@ -170,9 +169,9 @@ const UserReportTable = ({ data, isLoading }: { data: ReportResponseObject[], is
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[100px]">Session Name</TableHead>
-                <TableHead>Start Time</TableHead>
-                <TableHead>End Time</TableHead>
+                <TableHead className="w-[100px]">Student Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Attendance Marked At</TableHead>
                 <TableHead className="text-right">Attendance Status</TableHead>
               </TableRow>
             </TableHeader>
@@ -231,5 +230,44 @@ const UserAttendanceReport = () => {
   )
 }
 
+const SessionView = () => {
+  const { id } = useParams();
+  const [data, setData] = useState<ReportResponseObject[]>([]);
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
 
-export default UserAttendanceReport;
+    // const res = await generateReport({ startTime: data.startTime, endTime: data.endTime });
+    // console.log(res);
+    // if (res.error) {
+    //   toast({
+    //     title: "Error",
+    //     variant: "destructive",
+    //     description: (res.error as SerializedError).message
+    //   })
+    //   return;
+    // }
+    // if (res.data.length === 0) {
+    //   toast({
+    //     title: "Message",
+    //     description: "There are no logs"
+    //   })
+    // }
+    // if (res.data)
+    //   setData(res.data);
+    //
+    // console.log(res.data);
+  }
+  return (
+    <>
+      <div>Session {id}</div>
+      <section className="flex gap-10 w-full h-full">
+        <ReportForm cb={onSubmit} />
+        <aside className="flex flex-col gap-4 w-full min-h-[500px]">
+          <h2>{data.length !== 0 ? "Report" : ""}</h2>
+          <UserReportTable data={data} isLoading={false} />
+        </aside>
+      </section>
+    </>
+  )
+}
+
+export default SessionView;

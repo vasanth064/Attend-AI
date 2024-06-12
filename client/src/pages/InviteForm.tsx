@@ -16,6 +16,7 @@ import {
   useGetInviteQuery,
 } from '@/redux/invite/inviteApiSlice';
 import { useParams } from 'react-router-dom';
+import { useState } from 'react';
 
 interface InviteFormProps {
   previewMode: boolean;
@@ -41,12 +42,51 @@ const InviteForm: React.FC<InviteFormProps> = ({
 
   const { data, isLoading } = useGetInviteQuery(id);
   console.log(data);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   if (isLoading) return <div>Loading...</div>;
   return (
     data && (
       <form onSubmit={previewMode ? undefined : handleSubmit}>
         <h1 className='text-3xl font-bold'>{data?.name}</h1>
         <div className='flex flex-col gap-4 border border-gray-200 p-5 rounded-md my-5'>
+          <div className='grid gap-4'>
+            <div className='grid gap-2'>
+              <Label htmlFor='first-name'>Name</Label>
+              <Input
+                id='first-name'
+                name='name'
+                placeholder='Max'
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className='grid gap-2'>
+            <Label htmlFor='email'>Email</Label>
+            <Input
+              id='email'
+              type='email'
+              name='email'
+              placeholder='m@example.com'
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className='grid gap-2'>
+            <Label htmlFor='password'>Password</Label>
+            <Input
+              id='password'
+              type='password'
+              name='password'
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
           {(data.config as FormConfig[]).map(
             (item: FormConfig, index: number) => {
               if (item.type === 'select') {

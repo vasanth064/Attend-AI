@@ -4,6 +4,7 @@ import catchAsync from '../utils/catchAsync';
 import machineService from '../services/machine.service';
 import fs from 'fs';
 import logger from '../config/logger';
+import { User } from '@prisma/client';
 
 const markAttendance = catchAsync(async (req, res) => {
   if (!req.file) {
@@ -23,6 +24,16 @@ const markAttendance = catchAsync(async (req, res) => {
   }
 });
 
+const upcomingSessions = catchAsync(async (req, res) => {
+  const user = req.user as User;
+  if (user.clientID === null)
+    throw new Error("Invalid request to this endpoint");
+
+  const result = await machineService.upComingSessions(user.clientID);
+  res.send({ sessions: result });
+})
+
 export default {
-  markAttendance
+  markAttendance,
+  upcomingSessions
 };

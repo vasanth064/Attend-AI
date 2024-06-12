@@ -14,6 +14,9 @@ import UserPage from '@/pages/UserPage';
 import UserEnrollmentsTable from '@/components/UserEnrollmentsTable';
 import UserAttendanceReport from '@/components/UserAttendanceReport';
 import InviteLink from '@/pages/InviteLink';
+import SessionView from '@/pages/SessionView';
+import MachinePage from '@/pages/MachinePage';
+import MachineAttendance from '@/pages/MachineAttendance';
 interface Routes {
   path: string;
   title: string;
@@ -65,6 +68,10 @@ const routerRoutes = createBrowserRouter([
             element: <Sessions />,
           },
           {
+            path: 'sessions/:id',
+            element: <SessionView />
+          },
+          {
             path: 'invites',
             element: <Invites />,
           },
@@ -82,6 +89,14 @@ const routerRoutes = createBrowserRouter([
           },
         ],
       },
+      {
+        path: 'machine',
+        element: <MachinePage />
+      },
+      {
+        path: 'machine/mark/:id',
+        element: <MachineAttendance />
+      }
     ],
   },
   {
@@ -139,5 +154,10 @@ export const routes: Routes[] = [
     title: 'Report',
     roles: ['USER'],
   },
+  {
+    path: '/machine',
+    title: 'Home',
+    roles: ['MACHINE']
+  }
 ];
 export default routerRoutes;
