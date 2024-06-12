@@ -25,7 +25,8 @@ const loginUserWithEmailAndPassword = async (
     'password',
     'userType',
     'userData',
-    'clientID'
+    'clientID',
+    'inviteId'
   ]);
   if (!user || !(await isPasswordMatch(password, user.password as string))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');

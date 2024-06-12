@@ -16,6 +16,7 @@ model InviteConfig {
   config   Json
   client   Client @relation(fields: [clientID], references: [id], onDelete: Cascade)
   name     String @db.VarChar(255)
+  User     User[]
 }
 
 model Client {
@@ -55,17 +56,19 @@ enum UserStatus {
 }
 
 model User {
-  id          Int          @id @default(autoincrement())
-  name        String       @db.VarChar(255)
-  email       String       @unique @db.VarChar(255)
-  password    String       @db.VarChar(255)
-  clientID    Int?
-  userData    Json?
-  userType    UserType
-  status      UserStatus   @default(ENABLED)
-  client      Client?      @relation(fields: [clientID], references: [id], onDelete: Cascade)
-  Enrollments Enrollment[]
-  Token       Token[]
+  id           Int           @id @default(autoincrement())
+  name         String        @db.VarChar(255)
+  email        String        @unique @db.VarChar(255)
+  password     String        @db.VarChar(255)
+  signedUpWith InviteConfig? @relation(fields: [inviteId], references: [id])
+  clientID     Int?
+  userData     Json?
+  userType     UserType
+  status       UserStatus    @default(ENABLED)
+  client       Client?       @relation(fields: [clientID], references: [id], onDelete: Cascade)
+  Enrollments  Enrollment[]
+  Token        Token[]
+  inviteId     Int?
 }
 
 model Token {

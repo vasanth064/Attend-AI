@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { User, UserStatus } from '@prisma/client';
 import { clientService } from '../services';
 import catchAsync from '../utils/catchAsync';
 import httpStatus from 'http-status';
@@ -130,6 +130,26 @@ const getAllMachines = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(machines);
 });
 
+const getAllInvitedUsers = catchAsync(async (req, res) => {
+  const { clientID } = req.user as User;
+  if (!clientID) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Client ID is required');
+  }
+  const { inviteId, status } = req.query;
+  if (!inviteId) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invite ID is required');
+  }
+  if (!status) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Status is required');
+  }
+  const invitedUsers = await clientService.getInvitedUsers(
+    parseInt(inviteId as string),
+    clientID,
+    status as UserStatus
+  );
+  res.status(httpStatus.OK).send(invitedUsers);
+});
+
 const approveUserCreations = catchAsync(async (req, res) => {
   const clientUser = req.user as User;
   const { userIDs } = req.body;
@@ -170,5 +190,6 @@ export default {
   deleteMachine,
   getAllMachines,
   approveUserCreations,
-  enrollUserToSession
+  enrollUserToSession,
+  getAllInvitedUsers
 };
