@@ -176,6 +176,13 @@ const enrollUserToSession = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ message: `User ${userID} enrolled to session`, session });
 });
 
+const getLogsOfSession = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const logs = await clientService.getLogsOfSession(parseInt(id));
+
+  res.send(logs);
+})
+
 export default {
   createLink,
   getInviteLinks,
@@ -191,5 +198,6 @@ export default {
   getAllMachines,
   approveUserCreations,
   enrollUserToSession,
-  getAllInvitedUsers
+  getAllInvitedUsers,
+  getLogsOfSession
 };

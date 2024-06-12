@@ -1,3 +1,4 @@
+import { ReportResponseObject } from '../users/userApiSlice';
 import { apiSlice } from './../api/apiSlice';
 
 export interface CreateSession {
@@ -64,6 +65,13 @@ export const sessionsApiSlice = apiSlice.injectEndpoints({
         method: 'DELETE',
       }),
     }),
+    sessionReport: builder.query<ReportResponseObject[], number>({
+      query: (sessionId: number) => {
+        return {
+          url: `/client/logs/${sessionId}`,
+        }
+      }
+    })
   }),
 });
 
@@ -88,4 +96,5 @@ export const {
   useGetSessionQuery,
   useUpdateSessionMutation,
   useDeleteSessionMutation,
+  useSessionReportQuery,
 } = sessionsApiSlice;

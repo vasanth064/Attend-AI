@@ -74,6 +74,12 @@ const enrollUserToSession = Joi.object().keys({
   })
 });
 
+const getLogsOfSession = Joi.object().keys({
+  params: Joi.object().keys({
+    sessionId: Joi.number().required()
+  })
+})
+
 export default {
   createLink,
   session,
@@ -81,5 +87,6 @@ export default {
   deleteMachine,
   enrollUserToSession,
   invitedUsers,
-  approveUserCreation
+  approveUserCreation,
+  getLogsOfSession,
 };

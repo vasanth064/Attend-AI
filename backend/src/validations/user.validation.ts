@@ -52,7 +52,7 @@ const enrollUser = {
       email: Joi.string().required().email(),
       password: Joi.string().required().custom(password),
       name: Joi.string().required(),
-      clientID: Joi.number().required()
+      inviteId: Joi.string().required()
     })
     .pattern(/.+/, Joi.any())
 };

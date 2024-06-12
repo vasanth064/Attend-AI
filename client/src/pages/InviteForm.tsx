@@ -41,7 +41,6 @@ const InviteForm: React.FC<InviteFormProps> = ({
   }
 
   const { data, isLoading } = useGetInviteQuery(id);
-  console.log(data);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

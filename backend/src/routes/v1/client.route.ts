@@ -3,6 +3,7 @@ import validate from '../../middlewares/validate';
 import clientValidation from '../../validations/client.validation';
 import { clientController } from '../../controllers';
 import auth from '../../middlewares/auth';
+import { valid } from 'joi';
 
 const router = express.Router();
 
@@ -39,6 +40,13 @@ router
   .get(auth('manageSessions'), clientController.getSessions);
 
 router
+  .route('/logs/:id')
+  .get(
+    auth('manageUsers'),
+    validate(clientValidation.getLogsOfSession),
+    clientController.getLogsOfSession
+  )
+router
   .route('/session/:sessionID')
   .put(auth('manageSessions'), validate(clientValidation.session), clientController.updateSession)
   .delete(auth('manageSessions'), clientController.deleteSession)
@@ -68,6 +76,8 @@ router
     validate(clientValidation.enrollUserToSession),
     clientController.enrollUserToSession
   );
+
+
 
 export default router;
 

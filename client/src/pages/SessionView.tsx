@@ -1,30 +1,6 @@
 import { useParams } from "react-router-dom";
-import { useGenerateReportMutation } from "@/redux/users/userApiSlice";
-import { z } from "zod"
 import { ReportResponseObject } from "@/redux/users/userApiSlice"
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { useForm } from "react-hook-form"
-import { useState } from "react";
-
-import { cn } from "@/utils"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import {
   Table,
   TableBody,
@@ -34,9 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge";
-import { toast } from "@/components/ui/use-toast"
-import { SerializedError } from "@reduxjs/toolkit";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSessionReportQuery } from "@/redux/sessions/sessionsApiSlice";
 
 const customDateFormat = (date: Date) => {
   return (new Date(date)).toLocaleDateString() +
@@ -49,114 +24,9 @@ const getAttendanceStatus = (data: ReportResponseObject) => {
     if (data.session.endDateTime < new Date())
       return <Badge className="bg-red-500">Absent</Badge>
     else
-      return <Badge className="bg-grey-500">Upcoming</Badge>
+      return <Badge className="bg-slate-500">Upcoming</Badge>
   }
   return <Badge className="bg-green-500">Present</Badge>
-}
-
-const FormSchema = z.object({
-  startTime: z.date({
-    required_error: "A Start time is required",
-  }),
-  endTime: z.date({
-    required_error: "A End time is required",
-  })
-})
-
-const ReportForm = ({ cb }: { cb: (data: { startTime: Date, endTime: Date }) => void }) => {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  })
-
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(cb)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="startTime"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Start Time</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="endTime"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>End Time</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Pick a date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                    // disabled={(date) =>
-                    //   date > new Date() || date < new Date("1900-01-01")
-                    // }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Search</Button>
-      </form>
-    </Form>
-  )
 }
 
 const UserReportTable = ({ data, isLoading }: { data: ReportResponseObject[], isLoading: boolean }) => {
@@ -191,80 +61,22 @@ const UserReportTable = ({ data, isLoading }: { data: ReportResponseObject[], is
   )
 }
 
-const UserAttendanceReport = () => {
-  const [generateReport, { isLoading }] = useGenerateReportMutation();
-  const [data, setData] = useState<ReportResponseObject[]>([]);
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
-
-    const res = await generateReport({ startTime: data.startTime, endTime: data.endTime });
-    console.log(res);
-    if (res.error) {
-      toast({
-        title: "Error",
-        variant: "destructive",
-        description: (res.error as SerializedError).message
-      })
-      return;
-    }
-    if (res.data.length === 0) {
-      toast({
-        title: "Message",
-        description: "There are no logs"
-      })
-    }
-    if (res.data)
-      setData(res.data);
-
-    console.log(res.data);
-  }
-  return (
-    <>
-      <section className="flex gap-10 w-full h-full">
-        <ReportForm cb={onSubmit} />
-        <aside className="flex flex-col gap-4 w-full min-h-[500px]">
-          <h2>{data.length !== 0 ? "Report" : ""}</h2>
-          <UserReportTable data={data} isLoading={isLoading} />
-        </aside>
-      </section>
-    </>
-  )
-}
-
 const SessionView = () => {
   const { id } = useParams();
-  const [data, setData] = useState<ReportResponseObject[]>([]);
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  if (id === undefined)
+    return;
+  const { data, isLoading } = useSessionReportQuery(parseInt(id));
 
-    // const res = await generateReport({ startTime: data.startTime, endTime: data.endTime });
-    // console.log(res);
-    // if (res.error) {
-    //   toast({
-    //     title: "Error",
-    //     variant: "destructive",
-    //     description: (res.error as SerializedError).message
-    //   })
-    //   return;
-    // }
-    // if (res.data.length === 0) {
-    //   toast({
-    //     title: "Message",
-    //     description: "There are no logs"
-    //   })
-    // }
-    // if (res.data)
-    //   setData(res.data);
-    //
-    // console.log(res.data);
-  }
   return (
     <>
       <div>Session {id}</div>
       <section className="flex gap-10 w-full h-full">
-        <ReportForm cb={onSubmit} />
-        <aside className="flex flex-col gap-4 w-full min-h-[500px]">
-          <h2>{data.length !== 0 ? "Report" : ""}</h2>
-          <UserReportTable data={data} isLoading={false} />
-        </aside>
+        {data !== undefined &&
+          <aside className="flex flex-col gap-4 w-full min-h-[500px]">
+            <h2>{data.length !== 0 ? "Report" : ""}</h2>
+            <UserReportTable data={data} isLoading={false} />
+          </aside>
+        }
       </section>
     </>
   )

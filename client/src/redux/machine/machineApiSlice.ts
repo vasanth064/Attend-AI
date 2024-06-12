@@ -60,12 +60,9 @@ export const machineApiSlice = apiSlice.injectEndpoints({
         formData.append("file", file);
 
         return {
-          url: '/machine/markAttendance',
+          url: '/machine',
           method: 'POST',
-          headers: {
-            'Content-Type': 'multipart/form-data;'
-          },
-          formData: true
+          body: formData
         }
       }
     })
