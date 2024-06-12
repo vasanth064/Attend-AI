@@ -20,7 +20,7 @@ import {
 import { X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Option, useCreateInviteMutation } from '@/redux/invite/inviteApiSlice';
-import InviteForm from './InviteForm';
+import { useNavigate } from 'react-router-dom';
 
 const fieldTypes = [
   { label: 'Text', value: 'text' },
@@ -48,6 +48,7 @@ const FieldTypes = () => {
 const CreateInvite = () => {
   const form = useSelector((state: RootState) => state.form.formStructure);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const labelRef = useRef<HTMLInputElement>(null);
   const [type, setType] = useState<string>('text');
   const optionLabelRef = useRef<HTMLInputElement>(null);
@@ -347,6 +348,7 @@ const CreateInvite = () => {
                   name: linkNameRef.current?.value,
                   config: form,
                 });
+                navigate('/client/invites');
               }}>
               Create Invite Link
             </Button>

@@ -7,7 +7,13 @@ import {
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { ArrowUpDown, Eye, MoreHorizontal } from 'lucide-react';
+import {
+  ArrowUpDown,
+  Eye,
+  MoreHorizontal,
+  UserCheck2,
+  Users2,
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,6 +73,24 @@ const columns: ColumnDef<InviteLink>[] = [
           <Eye />
         </Button>
       </Link>
+    ),
+  },
+  {
+    id: 'manage',
+    header: () => <Button variant='ghost'>Manage Sign Up's</Button>,
+    cell: ({ row }) => (
+      <>
+        <Link to={`${row.original.id}/manage`} className='cursor-pointer'>
+          <Button variant='ghost'>
+            <UserCheck2 />
+          </Button>
+        </Link>
+        <Link to={`${row.original.id}/view`} className='cursor-pointer'>
+          <Button variant='ghost'>
+            <Users2 />
+          </Button>
+        </Link>
+      </>
     ),
   },
   {

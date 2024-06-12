@@ -14,6 +14,7 @@ import UserPage from '@/pages/UserPage';
 import UserEnrollmentsTable from '@/components/UserEnrollmentsTable';
 import UserAttendanceReport from '@/components/UserAttendanceReport';
 import InviteLink from '@/pages/InviteLink';
+import ManageInviteLinkSignup from '@/pages/ManageInviteLinkSignup';
 interface Routes {
   path: string;
   title: string;
@@ -79,6 +80,14 @@ const routerRoutes = createBrowserRouter([
           {
             path: 'invites/:inviteId',
             element: <InviteForm previewMode={true} />,
+          },
+          {
+            path: 'invites/:inviteId/manage',
+            element: <ManageInviteLinkSignup mode='manage' />,
+          },
+          {
+            path: 'invites/:inviteId/view',
+            element: <ManageInviteLinkSignup mode='view' />,
           },
         ],
       },

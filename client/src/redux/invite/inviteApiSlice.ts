@@ -1,4 +1,5 @@
 import { apiSlice } from '../api/apiSlice';
+import { User } from '../authentication/authSlice';
 
 export interface Option {
   label: string;
@@ -18,6 +19,18 @@ export interface CreateInviteLink {
 export interface InviteLink extends CreateInviteLink {
   id: string;
   clientId: string;
+}
+
+interface GetAllSignupRequest {
+  inviteId: number;
+  status: 'ENABLED' | 'DISABLED';
+}
+
+interface ApproveUserSignups {
+  message: string;
+  updatedUsers: {
+    count: number;
+  };
 }
 
 export const inviteApiSlice = apiSlice.injectEndpoints({
@@ -41,9 +54,9 @@ export const inviteApiSlice = apiSlice.injectEndpoints({
         method: 'GET',
       }),
       transformResponse: (data: InviteLink) => ({
-          ...data,
-          config: JSON.parse(data.config as string) as FormConfig[],
-        }),
+        ...data,
+        config: JSON.parse(data.config as string) as FormConfig[],
+      }),
     }),
     deleteInvite: builder.mutation<void, string>({
       query: (id) => ({
@@ -51,11 +64,30 @@ export const inviteApiSlice = apiSlice.injectEndpoints({
         method: 'DELETE',
       }),
     }),
+    getAllSignups: builder.query<User[], GetAllSignupRequest>({
+      query: ({ inviteId, status }) => ({
+        url: '/client/invitedUsers',
+        method: 'GET',
+        params: {
+          inviteId,
+          status,
+        },
+      }),
+    }),
+    approveUserSignups: builder.mutation<ApproveUserSignups, number[]>({
+      query: (userIDs) => ({
+        url: '/client/invitedUsers',
+        method: 'POST',
+        body: {
+          userIDs,
+        },
+      }),
+    }),
   }),
 });
 
 apiSlice.enhanceEndpoints({
-  addTagTypes: ['InviteLink'],
+  addTagTypes: ['InviteLink', 'InvitedUsers'],
   endpoints: {
     getInvites: {
       providesTags: ['InviteLink'],
@@ -66,6 +98,12 @@ apiSlice.enhanceEndpoints({
     deleteInvite: {
       invalidatesTags: ['InviteLink'],
     },
+    getAllSignups: {
+      providesTags: ['InvitedUsers'],
+    },
+    approveUserSignups: {
+      invalidatesTags: ['InvitedUsers'],
+    },
   },
 });
 
@@ -74,4 +112,6 @@ export const {
   useCreateInviteMutation,
   useGetInviteQuery,
   useDeleteInviteMutation,
+  useGetAllSignupsQuery,
+  useApproveUserSignupsMutation,
 } = inviteApiSlice;

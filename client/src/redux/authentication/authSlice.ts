@@ -8,6 +8,7 @@ export interface User {
   userData: string | null;
   userType: string;
   status: string;
+  inviteID: string | null;
 }
 
 export interface Tokens {
