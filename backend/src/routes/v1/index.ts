@@ -7,6 +7,7 @@ import config from '../../config/config';
 import clientRoute from './client.route';
 import machineRoute from './machine.route';
 import prisma from '../../client';
+import { authService, userService } from '../../services';
 
 const router = express.Router();
 
@@ -17,14 +18,7 @@ router.route('/').get(async (req, res) => {
     }
   });
   if (!admin) {
-    await prisma.user.create({
-      data: {
-        email: 'admin@attendai.com',
-        password: 'admin@attendai.com',
-        name: 'admin',
-        userType: 'ADMIN'
-      }
-    });
+    await userService.createUser('admin@attendai.com', 'admin@attendai.com', 'admin', 'ADMIN');
     return res.status(200).json({
       message: 'Working :))'
     });
