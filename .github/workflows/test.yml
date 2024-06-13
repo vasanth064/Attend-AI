@@ -26,4 +26,4 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Run tests
-        run: yarn test:unit
+        run: yarn test:unit:cov
