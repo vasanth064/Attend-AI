@@ -67,7 +67,7 @@ const upComingSessions = async (clientId: number) => {
   const sessions = await prisma.session.findMany({
     where: {
       clientID: clientId,
-      startDateTime: {
+      endDateTime: {
         gte: date
       }
     },

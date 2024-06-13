@@ -191,6 +191,13 @@ const enrollUserToSession = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ message: `User ${userID} enrolled to session`, session });
 });
 
+const getLogsOfSession = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const logs = await clientService.getLogsOfSession(parseInt(id));
+
+  res.send(logs);
+})
+
 const getUserNotEnrolledToSession = catchAsync(async (req, res) => {
   const { clientID } = req.user as User;
   if (!clientID) {
@@ -230,5 +237,6 @@ export default {
   deleteUserEnrollments,
   approveUserCreations,
   enrollUserToSession,
-  getAllInvitedUsers
+  getAllInvitedUsers,
+  getLogsOfSession
 };

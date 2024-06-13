@@ -7,8 +7,7 @@ import { userValidation } from '../../validations';
 import { userController } from '../../controllers';
 
 const router = express.Router();
-
-var upload = multer({ dest: './uploads/' });
+const upload = multer({ dest: "./uploads/" });
 
 // router
 //   .route('/')

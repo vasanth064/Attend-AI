@@ -33,6 +33,15 @@ interface ApproveUserSignups {
   };
 }
 
+interface EnrollUserRequest {
+  body: Record<string, string>;
+  file: Blob
+}
+
+interface ModifiedUser extends User {
+  inviteId: number | null;
+}
+
 export const inviteApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getInvites: builder.query<InviteLink[], void>({
@@ -83,6 +92,15 @@ export const inviteApiSlice = apiSlice.injectEndpoints({
         },
       }),
     }),
+    enrollUser: builder.mutation<ModifiedUser, FormData>({
+      query: (formData: FormData) => {
+        return {
+          url: '/users/enroll',
+          method: 'POST',
+          body: formData,
+        }
+      }
+    })
   }),
 });
 
@@ -114,4 +132,5 @@ export const {
   useDeleteInviteMutation,
   useGetAllSignupsQuery,
   useApproveUserSignupsMutation,
+  useEnrollUserMutation
 } = inviteApiSlice;

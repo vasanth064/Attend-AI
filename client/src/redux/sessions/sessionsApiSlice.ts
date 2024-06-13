@@ -1,4 +1,5 @@
 import { User } from '../authentication/authSlice';
+import { ReportResponseObject } from '../users/userApiSlice';
 import { apiSlice } from './../api/apiSlice';
 
 export interface CreateSession {
@@ -70,6 +71,13 @@ export const sessionsApiSlice = apiSlice.injectEndpoints({
         method: 'DELETE',
       }),
     }),
+    sessionReport: builder.query<ReportResponseObject[], number>({
+      query: (sessionId: number) => {
+        return {
+          url: `/client/logs/${sessionId}`,
+        }
+      }
+    })
     getSessionUsers: builder.query<User[], string>({
       query: (id) => ({
         url: `/client/session/users/${id}`,
@@ -159,4 +167,5 @@ export const {
   useEnrollUsersMutation,
   useNotEnrolledUsersQuery,
   useUnEnrollUserMutation,
+  useSessionReportQuery,
 } = sessionsApiSlice;

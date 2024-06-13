@@ -58,7 +58,7 @@ const createUserWithDisabledStatus = async (
   email: string,
   password: string,
   name: string,
-  clientID: number,
+  inviteId: number,
   userData: unknown = {},
   userType: UserType = UserType.USER,
   status: UserStatus = UserStatus.DISABLED
@@ -77,16 +77,16 @@ const createUserWithDisabledStatus = async (
     data: {
       email: email,
       name: name,
-      clientID: clientID,
       password: await encryptPassword(password),
       userData: JSON.stringify(userData),
+      inviteId: inviteId,
       userType: userType,
       status: status
     }
   });
 };
-
 /**
+
  * Get user by id
  * @param {ObjectId} id
  * @param {Array<Key>} keys
@@ -120,9 +120,9 @@ const enrollUser = async (
   email: string,
   password: string,
   name: string,
-  clientID: number,
   userData: unknown = {},
-  filePath: string
+  filePath: string,
+  inviteId: number
 ) => {
   const result = await orionRequest.orionRequest(filePath, email);
 
@@ -151,7 +151,7 @@ const enrollUser = async (
     );
   }
 
-  return userService.createUserWithDisabledStatus(email, password, name, clientID, userData);
+  return userService.createUserWithDisabledStatus(email, password, name, inviteId, userData);
 };
 
 const getSessionsByUserId = async (userId: number) => {

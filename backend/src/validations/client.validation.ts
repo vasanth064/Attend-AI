@@ -74,6 +74,12 @@ const enrollUserToSession = Joi.object().keys({
   })
 });
 
+const getLogsOfSession = Joi.object().keys({
+  params: Joi.object().keys({
+    sessionId: Joi.number().required()
+  })
+})
+
 const usersNotEnrolledToSession = {
   query: Joi.object().keys({
     sessionID: Joi.number().required(),
@@ -89,5 +95,6 @@ export default {
   enrollUserToSession,
   invitedUsers,
   approveUserCreation,
+  getLogsOfSession,
   usersNotEnrolledToSession
 };

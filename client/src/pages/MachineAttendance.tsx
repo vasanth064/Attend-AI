@@ -4,8 +4,17 @@ import { selectCurrentMachineSession } from "@/redux/machine/machineSlice";
 import { useState } from "react";
 import FaceDetector from "@/components/FaceDetector";
 import { useMarkAttendanceMutation } from "@/redux/machine/machineApiSlice";
-
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import loading from '@/assets/loading.gif';
+import success from '@/assets/success.gif';
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { useToast } from "@/components/ui/use-toast";
 function base64toBlob(dataURI: string) {
   const splitDataURI = dataURI.split(',');
   const byteString =
@@ -32,27 +41,34 @@ const MachineAttendance = () => {
   const [markingAttendance, setMarkingAttendace] = useState<boolean>(false);
   const [attendanceMarked, setAttendanceMarked] = useState<boolean>(false);
 
+  const { toast } = useToast();
   const [markAttendance, obj] = useMarkAttendanceMutation();
   const handleAttendance = async (image: string) => {
     const file = base64toBlob(image);
     setMarkingAttendace(true);
-    // const res = await markAttendance({ sessionID: id, file: file });
-    setTimeout(() => {
-      setAttendanceMarked(true);
-      setTimeout(() => {
-        setMarkingAttendace(false);
-        setUserFace('');
-      }, 1800);
-    }, 2000);
+    const res = await markAttendance({ sessionID: id, file: file });
+    setAttendanceMarked(true);
+    setMarkingAttendace(false);
+    setAttendanceMarked(false);
+    setUserFace('');
+    if (res.error) {
+      toast({
+        title: "Error",
+        variant: "destructive",
+        description: (res.error as any).data.message,
+      })
+      return;
+    }
+    alert(res.data.message);
   };
   return (
     <>
-      <div>Session {id}</div>
-      <div>{name} {startDateTime} {endDateTime}</div>
+      <div>Session Name: {name}</div>
       {userFace == '' && (
         <FaceDetector
           attendanceMode={true}
           onFaceDetected={(image) => {
+            console.log("asdf");
             setUserFace(image);
             const file = base64toBlob(image);
             console.log(file);
@@ -60,6 +76,20 @@ const MachineAttendance = () => {
           }}
         />
       )}
+      <Dialog open={markingAttendance}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Marking Attendance</DialogTitle>
+            <DialogDescription>
+              {attendanceMarked ? (
+                <img src={success} alt='success' className='w-full h-auto' />
+              ) : (
+                <img src={loading} alt='loading' className='w-full h-auto' />
+              )}
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </>
   )
 

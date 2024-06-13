@@ -48,7 +48,7 @@ const getAttendanceStatus = (data: ReportResponseObject) => {
     if (data.session.endDateTime < new Date())
       return <Badge className="bg-red-500">Absent</Badge>
     else
-      return <Badge className="bg-grey-500">Upcoming</Badge>
+      return <Badge className="bg-slate-900">Upcoming</Badge>
   }
   return <Badge className="bg-green-500">Present</Badge>
 }

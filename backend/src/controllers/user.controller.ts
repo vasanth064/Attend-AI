@@ -23,9 +23,8 @@ const enrollUser = catchAsync(async (req, res) => {
   if (!req.file) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'File is required');
   }
-  let { email, password, name, clientID, ...userData } = req.body;
+  let { email, password, name, inviteId, ...userData } = req.body;
 
-  clientID = parseInt(clientID);
   const user = await userService.getUserByEmail(email, [
     'id',
     'email',
@@ -37,18 +36,14 @@ const enrollUser = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'User already exists');
   }
 
-  const client = await adminService.getClientById(clientID);
-  if (!client) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Client not found');
-  }
 
   const newUser = await userService.enrollUser(
     email,
     password,
     name,
-    clientID,
     userData,
-    req.file.path
+    req.file.path,
+    parseInt(inviteId)
   );
   res.status(httpStatus.CREATED).send(newUser);
 });
