@@ -75,9 +75,9 @@ export const sessionsApiSlice = apiSlice.injectEndpoints({
       query: (sessionId: number) => {
         return {
           url: `/client/logs/${sessionId}`,
-        }
-      }
-    })
+        };
+      },
+    }),
     getSessionUsers: builder.query<User[], string>({
       query: (id) => ({
         url: `/client/session/users/${id}`,

@@ -1,9 +1,9 @@
-import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { selectCurrentMachineSession } from "@/redux/machine/machineSlice";
-import { useState } from "react";
-import FaceDetector from "@/components/FaceDetector";
-import { useMarkAttendanceMutation } from "@/redux/machine/machineApiSlice";
+import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectCurrentMachineSession } from '@/redux/machine/machineSlice';
+import { useState } from 'react';
+import FaceDetector from '@/components/FaceDetector';
+import { useMarkAttendanceMutation } from '@/redux/machine/machineApiSlice';
 import {
   Dialog,
   DialogContent,
@@ -13,8 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import loading from '@/assets/loading.gif';
 import success from '@/assets/success.gif';
-import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from '@/components/ui/use-toast';
 function base64toBlob(dataURI: string) {
   const splitDataURI = dataURI.split(',');
   const byteString =
@@ -33,16 +32,15 @@ function base64toBlob(dataURI: string) {
 
 const MachineAttendance = () => {
   const { id } = useParams();
-  if (id === undefined)
-    return;
+  if (id === undefined) return;
 
-  const { name, startDateTime, endDateTime } = useSelector(selectCurrentMachineSession);
+  const { name } = useSelector(selectCurrentMachineSession);
   const [userFace, setUserFace] = useState<string>('');
   const [markingAttendance, setMarkingAttendace] = useState<boolean>(false);
   const [attendanceMarked, setAttendanceMarked] = useState<boolean>(false);
 
   const { toast } = useToast();
-  const [markAttendance, obj] = useMarkAttendanceMutation();
+  const [markAttendance] = useMarkAttendanceMutation();
   const handleAttendance = async (image: string) => {
     const file = base64toBlob(image);
     setMarkingAttendace(true);
@@ -53,10 +51,11 @@ const MachineAttendance = () => {
     setUserFace('');
     if (res.error) {
       toast({
-        title: "Error",
-        variant: "destructive",
+        title: 'Error',
+        variant: 'destructive',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         description: (res.error as any).data.message,
-      })
+      });
       return;
     }
     alert(res.data.message);
@@ -68,7 +67,7 @@ const MachineAttendance = () => {
         <FaceDetector
           attendanceMode={true}
           onFaceDetected={(image) => {
-            console.log("asdf");
+            console.log('asdf');
             setUserFace(image);
             const file = base64toBlob(image);
             console.log(file);
@@ -91,8 +90,7 @@ const MachineAttendance = () => {
         </DialogContent>
       </Dialog>
     </>
-  )
-
-}
+  );
+};
 
 export default MachineAttendance;

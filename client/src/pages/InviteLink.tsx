@@ -15,8 +15,6 @@ import loading from '@/assets/loading.gif';
 import success from '@/assets/success.gif';
 import { useEnrollUserMutation } from '@/redux/invite/inviteApiSlice';
 import { useToast } from '@/components/ui/use-toast';
-import { SerializedError } from '@reduxjs/toolkit';
-import axios from 'axios';
 
 function base64toBlob(dataURI: string) {
   const splitDataURI = dataURI.split(',');
@@ -39,42 +37,30 @@ const InviteLink = () => {
   const [userFace, setUserFace] = useState<string>('');
   const [markingAttendance, setMarkingAttendace] = useState<boolean>(false);
   const [attendanceMarked, setAttendanceMarked] = useState<boolean>(false);
-  const handleAttendance = async (image: string) => {
-    setMarkingAttendace(true);
-    setTimeout(() => {
-      setAttendanceMarked(true);
-      setTimeout(() => {
-        setMarkingAttendace(false);
-        setUserFace('');
-      }, 1800);
-    }, 2000);
-  };
+
   const { toast } = useToast();
   const [enrollUser, { isError }] = useEnrollUserMutation();
   const handleSubmitAsync = async (formData: FormData) => {
-
     const res = await enrollUser(formData);
     console.log(res);
-
 
     // const res = await enrollUser(formData);
     if (isError) {
       toast({
-        title: "Error",
-        description: "Failed to create the user"
-      })
+        title: 'Error',
+        description: 'Failed to create the user',
+      });
       return;
     }
 
     toast({
-      title: "Congratzz",
-      description: `User created ${formData.get("email")}`
-    })
+      title: 'Congratzz',
+      description: `User created ${formData.get('email')}`,
+    });
     setUserFace('');
-
-  }
-  if (inviteId === undefined)
-    return;
+    setAttendanceMarked(true);
+  };
+  if (inviteId === undefined) return;
   return (
     <div className='mx-auto max-w-screen-sm'>
       <Layout header={false}>
@@ -82,14 +68,14 @@ const InviteLink = () => {
           previewMode={false}
           handleSubmit={(e: BaseSyntheticEvent) => {
             e.preventDefault();
-            let formData = new FormData();
+            const formData = new FormData();
             for (let i = 0; i < e.target.length - 1; i++) {
-              if (e.target[i].name !== undefined && e.target[i].name !== "")
+              if (e.target[i].name !== undefined && e.target[i].name !== '')
                 formData.append(e.target[i].name, e.target[i].value);
             }
-            formData.append("inviteId", inviteId.toString());
+            formData.append('inviteId', inviteId.toString());
             const file = base64toBlob(userFace);
-            formData.append("file", file);
+            formData.append('file', file);
             setMarkingAttendace(true);
             handleSubmitAsync(formData)
               .then((e) => e)
@@ -111,10 +97,13 @@ const InviteLink = () => {
           {userFace != '' && (
             <div className='flex gap-4 flex-col items-center w-100 pb-5'>
               <img src={userFace} alt='user face' className='rounded-md' />
-              <Button variant='outline' className='w-full' onClick={(e: React.MouseEvent<HTMLElement>) => {
-                e.preventDefault();
-                setUserFace('');
-              }}>
+              <Button
+                variant='outline'
+                className='w-full'
+                onClick={(e: React.MouseEvent<HTMLElement>) => {
+                  e.preventDefault();
+                  setUserFace('');
+                }}>
                 Retake Photo
               </Button>
             </div>

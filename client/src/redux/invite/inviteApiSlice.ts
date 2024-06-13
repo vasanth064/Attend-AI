@@ -33,11 +33,6 @@ interface ApproveUserSignups {
   };
 }
 
-interface EnrollUserRequest {
-  body: Record<string, string>;
-  file: Blob
-}
-
 interface ModifiedUser extends User {
   inviteId: number | null;
 }
