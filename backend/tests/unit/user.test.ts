@@ -66,7 +66,7 @@ jest.mock('../../src/client', () => ({
 }));
 
 describe('User service tests', () => {
-  let mockUsers: User[] = [
+  const mockUsers: User[] = [
     {
       id: 1,
       name: 'User 1',
@@ -195,7 +195,7 @@ describe('User service tests', () => {
       status: 'DISABLED',
       inviteId: null
     };
-    const clientID: number = 1;
+    const clientID = 1;
     let orionRes = { ...mockOrionResponse };
     beforeAll(() => {
       jest.spyOn(userService, 'getUserByEmail').mockImplementation(async (email) => {
@@ -217,8 +217,8 @@ describe('User service tests', () => {
           sampleUser.password,
           sampleUser.name,
           clientID,
-          sampleUser.userData,
-          ''
+          JSON.stringify(sampleUser.userData),
+          1
         )
       ).rejects.toEqual(new ApiError(httpStatus.BAD_REQUEST, 'Orion request failed'));
     });
@@ -233,8 +233,8 @@ describe('User service tests', () => {
           sampleUser.password,
           sampleUser.name,
           clientID,
-          sampleUser.userData,
-          ''
+          JSON.stringify(sampleUser.userData),
+          1
         )
       ).rejects.toEqual(new ApiError(httpStatus.BAD_REQUEST, orionRes.result.summary.message));
     });
@@ -253,8 +253,8 @@ describe('User service tests', () => {
           sampleUser.password,
           sampleUser.name,
           clientID,
-          sampleUser.userData,
-          ''
+          JSON.stringify(sampleUser.userData),
+          1
         )
       ).rejects.toEqual(
         new ApiError(httpStatus.BAD_REQUEST, `User already exists with a the email ${userEmail}`)
@@ -270,8 +270,8 @@ describe('User service tests', () => {
         sampleUser.password,
         sampleUser.name,
         clientID,
-        sampleUser.userData,
-        sampleUser.status
+        JSON.stringify(sampleUser.userData),
+        1
       );
       expect(res).toEqual({ ...sampleUser });
     });

@@ -29,15 +29,13 @@ jest.mock('../../src/config/config', () => ({
   }
 }));
 
-
-describe("Unit tests for machine service", () => {
-  describe("Get Sessions for the particular machine", () => {
-
-    test("should return the sessions that are present above the current date", async () => {
-      jest.spyOn(prisma.session, "findMany").mockResolvedValueOnce([]);
+describe('Unit tests for machine service', () => {
+  describe('Get Sessions for the particular machine', () => {
+    test('should return the sessions that are present above the current date', async () => {
+      jest.spyOn(prisma.session, 'findMany').mockResolvedValueOnce([]);
       const res = await machineService.upComingSessions(1);
       expect(prisma.session.findMany).toHaveBeenCalled();
       expect(typeof res).toBe(typeof []);
-    })
-  })
-})
+    });
+  });
+});

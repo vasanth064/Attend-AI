@@ -351,7 +351,6 @@ const approveUserCreations = async (userIDs: number[], clientID: number) => {
   });
 };
 
-
 const getLogsOfSession = async (sessionID: number) => {
   console.log(sessionID);
   const res = await prisma.enrollment.findMany({
@@ -362,10 +361,10 @@ const getLogsOfSession = async (sessionID: number) => {
       session: true,
       AttendanceLogs: true
     }
-  })
+  });
 
   return res;
-}
+};
 const enrollUserToSession = async (sessionID: number, userID: number, clientID: number) => {
   const session = await clientService.getSession(sessionID);
   if (!session || session.clientID !== clientID) {
@@ -431,7 +430,7 @@ export {
   getUserByClientID,
   getInvitedUsers,
   getAllMachines,
-  getLogsOfSession
+  getLogsOfSession,
   getUserNotEnrolledToSession,
   deleteUserEnrollments
 };
