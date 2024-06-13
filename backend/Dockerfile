@@ -1,17 +1,13 @@
-FROM node:alpine
+FROM node:22-alpine as base
 
-RUN mkdir -p /usr/src/node-app && chown -R node:node /usr/src/node-app
+WORKDIR /app
 
-WORKDIR /usr/src/node-app
-
-COPY package.json yarn.lock ./
-
-USER node
+COPY package.json ./
 
 RUN yarn install
 
-COPY --chown=node:node . .
+COPY . ./
 
-EXPOSE 3000
+RUN npx prisma generate
 
 CMD yarn start
