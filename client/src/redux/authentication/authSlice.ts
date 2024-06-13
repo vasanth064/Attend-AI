@@ -30,23 +30,29 @@ interface UserState {
   user: User | null;
   accessToken: string | null;
 }
+const accessTokenKey = sessionStorage.getItem('accessToken');
+const user = sessionStorage.getItem('user');
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
     isAuthenticated: false,
-    user: null,
-    accessToken: null,
+    user: user && user !== '' ? JSON.parse(user) : null,
+    accessToken: accessTokenKey !== '' ? accessTokenKey : null,
   } as UserState,
   reducers: {
     setCredentials: (state, action: PayloadAction<LoginResponse>) => {
       const { user, tokens } = action.payload;
       if (tokens) {
+        sessionStorage.setItem('accessToken', tokens.access.token);
+        sessionStorage.setItem('user', JSON.stringify(user));
         state.accessToken = tokens.access.token;
         state.isAuthenticated = true;
         state.user = user;
       }
     },
     logout: (state) => {
+      sessionStorage.setItem('accessToken', '');
+      sessionStorage.setItem('user', '');
       state.user = null;
       state.accessToken = null;
       state.isAuthenticated = false;

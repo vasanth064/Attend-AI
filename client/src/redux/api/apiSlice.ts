@@ -8,13 +8,23 @@ import {
 import { setCredentials, logout, Tokens } from '../authentication/authSlice';
 import { RootState } from '../store';
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
 const baseQuery = fetchBaseQuery({
-  baseUrl: 'http://127.0.0.1:3000/v1',
+  baseUrl: `${BASE_URL}/v1`,
   // credentials: 'include',
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.accessToken;
+
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
+    } else {
+      const accessToken = sessionStorage.getItem('accessToken');
+      if (accessToken !== '' && accessToken !== null) {
+        headers.set('Authorization', `Bearer ${accessToken}`);
+      } else {
+        sessionStorage.setItem('accessToken', '');
+      }
     }
     return headers;
   },
@@ -26,8 +36,8 @@ const refreshQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   let result = await baseQuery(args, api, extraOptions);
+
   if (result?.error?.status === 403) {
-    console.log('Refreshing token');
     const refreshTokenRes = await baseQuery(
       '/auth/refresh-tokens',
       api,
@@ -51,8 +61,7 @@ const refreshQuery: BaseQueryFn<
 
 export const apiSlice = createApi({
   baseQuery: refreshQuery,
-  tagTypes: ["AdminClientDetails"],
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  endpoints: (builder) => ({}),
-  tagTypes: ['Session', 'Auth', 'InviteLink', 'Machine'],
+  endpoints: () => ({}),
+  tagTypes: ['Session', 'Auth', 'InviteLink', 'Machine', 'AdminClientDetails'],
 });
