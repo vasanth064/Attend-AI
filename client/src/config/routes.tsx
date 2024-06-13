@@ -136,17 +136,17 @@ export const routes: Routes[] = [
   {
     path: '/client/sessions',
     title: 'Sessions',
-    roles: ['CLIENT', 'ADMIN'],
+    roles: ['CLIENT'],
   },
   {
     path: '/client/invites',
     title: 'Invites',
-    roles: ['CLIENT', 'ADMIN'],
+    roles: ['CLIENT'],
   },
   {
     path: '/client/machines',
     title: 'Machines',
-    roles: ['CLIENT', 'ADMIN'],
+    roles: ['CLIENT'],
   },
   {
     path: '/admin',
