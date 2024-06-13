@@ -37,3 +37,7 @@ process.on('SIGTERM', () => {
     server.close();
   }
 });
+
+app.listen(config.port,'0.0.0.0', () => {
+  logger.info(`Listening to port ${config.port}`);
+});
