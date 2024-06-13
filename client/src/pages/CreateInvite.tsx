@@ -21,6 +21,7 @@ import { X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Option, useCreateInviteMutation } from '@/redux/invite/inviteApiSlice';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/components/ui/use-toast';
 
 const fieldTypes = [
   { label: 'Text', value: 'text' },
@@ -54,6 +55,7 @@ const CreateInvite = () => {
   const optionLabelRef = useRef<HTMLInputElement>(null);
   const optionValueRef = useRef<HTMLInputElement>(null);
   const linkNameRef = useRef<HTMLInputElement>(null);
+  const toast = useToast();
   const [createInviteLink, { isLoading }] = useCreateInviteMutation();
   const [selectOptions, setSelectOptions] = useState<Option[]>([]);
   const handleTypeChange = (value: string, index: number) => {
@@ -344,8 +346,15 @@ const CreateInvite = () => {
             <Button
               disabled={isLoading}
               onClick={() => {
+                const linkName = linkNameRef?.current?.value;
+                if (!linkName) {
+                  return toast.toast({
+                    title: 'Link Name is required',
+                    duration: 5000,
+                  });
+                }
                 createInviteLink({
-                  name: linkNameRef.current?.value,
+                  name: linkName,
                   config: form,
                 });
                 navigate('/client/invites');

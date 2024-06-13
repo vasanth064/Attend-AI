@@ -1,3 +1,4 @@
+import { User } from '../authentication/authSlice';
 import { apiSlice } from './../api/apiSlice';
 
 export interface CreateSession {
@@ -8,6 +9,11 @@ export interface CreateSession {
 
 export interface Session extends CreateSession {
   id: string;
+}
+
+interface EnrollUser {
+  userID: number;
+  sessionID: string;
 }
 
 export const sessionsApiSlice = apiSlice.injectEndpoints({
@@ -64,6 +70,51 @@ export const sessionsApiSlice = apiSlice.injectEndpoints({
         method: 'DELETE',
       }),
     }),
+    getSessionUsers: builder.query<User[], string>({
+      query: (id) => ({
+        url: `/client/session/users/${id}`,
+        method: 'GET',
+      }),
+    }),
+    getClientUsers: builder.query<User[], void>({
+      query: () => ({
+        url: '/client/users/',
+        method: 'GET',
+      }),
+    }),
+    enrollUsers: builder.mutation<void, EnrollUser>({
+      query: ({ userID, sessionID }) => ({
+        url: '/client/enroll',
+        method: 'POST',
+        body: {
+          userID,
+          sessionID,
+        },
+      }),
+    }),
+    unEnrollUser: builder.mutation<void, EnrollUser>({
+      query: ({ sessionID, userID }) => ({
+        url: `/client/session/users`,
+        method: 'DELETE',
+        params: {
+          sessionID,
+          userID,
+        },
+      }),
+    }),
+    notEnrolledUsers: builder.query<
+      User[],
+      { sessionID: string; inviteID: string }
+    >({
+      query: ({ sessionID, inviteID }) => ({
+        url: `/client/session/notEnrolledUsers`,
+        method: 'GET',
+        params: {
+          sessionID,
+          inviteID,
+        },
+      }),
+    }),
   }),
 });
 
@@ -79,6 +130,21 @@ apiSlice.enhanceEndpoints({
     deleteSession: {
       invalidatesTags: ['Session'],
     },
+    getSessionUsers: {
+      providesTags: ['SessionUsers'],
+    },
+    getClientUsers: {
+      providesTags: ['ClientUsers'],
+    },
+    enrollUsers: {
+      invalidatesTags: ['SessionUsers', 'SessionNotUsers'],
+    },
+    notEnrolledUsers: {
+      providesTags: ['SessionNotUsers'],
+    },
+    unEnrollUser: {
+      invalidatesTags: ['SessionUsers', 'SessionNotUsers'],
+    },
   },
 });
 
@@ -88,4 +154,9 @@ export const {
   useGetSessionQuery,
   useUpdateSessionMutation,
   useDeleteSessionMutation,
+  useGetSessionUsersQuery,
+  useGetClientUsersQuery,
+  useEnrollUsersMutation,
+  useNotEnrolledUsersQuery,
+  useUnEnrollUserMutation,
 } = sessionsApiSlice;

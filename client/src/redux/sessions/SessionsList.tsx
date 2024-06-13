@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { AlertDialog, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal, UserRoundCog } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -21,6 +21,7 @@ import ConfirmationDialog from '@/components/ConfirmationDialog';
 import TableView from '@/components/TableView';
 import { Link } from 'react-router-dom';
 import { Eye } from 'lucide-react';
+
 const columns: ColumnDef<Session>[] = [
   {
     id: 'select',
@@ -76,15 +77,30 @@ const columns: ColumnDef<Session>[] = [
     },
   },
   {
+    accessorKey: 'Associate Users',
+    header: () => <div className='text-right'>Associate Users</div>,
+    cell: ({ row }) => {
+      return (
+        <Link to={`${row.original.id}/associate`} className='cursor-pointer'>
+          <Button variant='ghost'>
+            <UserRoundCog />
+          </Button>
+        </Link>
+      );
+    },
+  },
+  {
     accessorKey: 'View info',
     header: () => <div className='text-right'>View info</div>,
     cell: ({ row }) => {
-      return (<Link to={`${row.original.id}`} className='cursor-pointer'>
-        <Button variant='ghost'>
-          <Eye />
-        </Button>
-      </Link>)
-    }
+      return (
+        <Link to={`${row.original.id}`} className='cursor-pointer'>
+          <Button variant='ghost'>
+            <Eye />
+          </Button>
+        </Link>
+      );
+    },
   },
   {
     id: 'actions',
@@ -120,7 +136,7 @@ const columns: ColumnDef<Session>[] = [
                   onConfirm={async () => {
                     await deleteSession(row.original.id);
                   }}
-                  onCancel={() => { }}
+                  onCancel={() => {}}
                 />
               </AlertDialog>
               <AlertDialog>
@@ -139,7 +155,7 @@ const columns: ColumnDef<Session>[] = [
                   onConfirm={async () => {
                     await deleteSession(row.original.id);
                   }}
-                  onCancel={() => { }}
+                  onCancel={() => {}}
                 />
               </AlertDialog>
             </DropdownMenuGroup>
