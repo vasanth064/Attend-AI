@@ -21,6 +21,14 @@ router
   .get(clientController.getInviteLink);
 
 router
+  .route('/session/notEnrolledUsers')
+  .get(
+    auth('manageInviteLinks'),
+    validate(clientValidation.usersNotEnrolledToSession),
+    clientController.getUserNotEnrolledToSession
+  );
+
+router
   .route('/invitedUsers')
   .get(
     auth('manageInviteLinks'),
@@ -33,10 +41,20 @@ router
     clientController.approveUserCreations
   );
 
+router.route('/users').get(auth('manageUsers'), clientController.getUserByClientID);
+
 router
   .route('/session')
   .post(auth('manageSessions'), clientController.createSession)
   .get(auth('manageSessions'), clientController.getSessions);
+
+router
+  .route('/session/users/:sessionID')
+  .get(auth('manageSessions'), clientController.getUserBySessionID);
+
+router
+  .route('/session/users')
+  .delete(auth('manageSessions'), clientController.deleteUserEnrollments);
 
 router
   .route('/session/:sessionID')

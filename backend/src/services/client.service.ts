@@ -79,8 +79,8 @@ const createSession = async (
     data: {
       clientID: clientID,
       name: name,
-      startDateTime: startDateTime,
-      endDateTime: endDateTime
+      startDateTime: new Date(startDateTime),
+      endDateTime: new Date(endDateTime)
     }
   });
   return session;
@@ -214,6 +214,16 @@ const getInvitedUsers = async (inviteId: number, clientID: number, status: UserS
         inviteId,
         clientID,
         status: UserStatus.ENABLED
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        userType: true,
+        status: true,
+        userData: true,
+        inviteId: true,
+        clientID: true
       }
     });
     if (invitedUsers.length === 0) {
@@ -226,6 +236,16 @@ const getInvitedUsers = async (inviteId: number, clientID: number, status: UserS
         inviteId,
         clientID,
         status: UserStatus.DISABLED
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        userType: true,
+        status: true,
+        userData: true,
+        inviteId: true,
+        clientID: true
       }
     });
     if (invitedUsers.length === 0) {
@@ -235,6 +255,88 @@ const getInvitedUsers = async (inviteId: number, clientID: number, status: UserS
   }
 };
 
+const getUserByClientID = async (clientID: number) => {
+  const users = await prisma.user.findMany({
+    where: {
+      clientID
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      userType: true,
+      status: true,
+      userData: true,
+      inviteId: true,
+      clientID: true
+    }
+  });
+  if (users.length === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  return users;
+};
+
+const getUserBySessionID = async (sessionID: number) => {
+  const users = await prisma.user.findMany({
+    where: {
+      Enrollments: {
+        some: {
+          session: {
+            id: sessionID
+          }
+        }
+      }
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      userType: true,
+      status: true,
+      userData: true,
+      inviteId: true,
+      clientID: true
+    }
+  });
+  if (users.length === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  return users;
+};
+
+const getUserNotEnrolledToSession = async (
+  sessionID: string,
+  inviteID: string,
+  clientID: number
+) => {
+  const users = await prisma.user.findMany({
+    where: {
+      NOT: {
+        Enrollments: {
+          some: {
+            SessionID: parseInt(sessionID)
+          }
+        }
+      },
+      inviteId: parseInt(inviteID),
+      clientID: clientID
+    }
+  });
+  if (users.length === 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  return users;
+};
+
+const deleteUserEnrollments = async (userID: number, sessionID: number) => {
+  await prisma.enrollment.deleteMany({
+    where: {
+      userID,
+      SessionID: sessionID
+    }
+  });
+};
 const approveUserCreations = async (userIDs: number[], clientID: number) => {
   return await prisma.user.updateMany({
     where: {
@@ -287,7 +389,11 @@ const clientService = {
   createMachine,
   deleteMachineById,
   getAllMachines,
+  getUserBySessionID,
+  getUserByClientID,
   enrollUserToSession,
+  getUserNotEnrolledToSession,
+  deleteUserEnrollments,
   getEnrollment,
   getInvitedUsers,
   approveUserCreations
@@ -305,6 +411,10 @@ export {
   getSession,
   deleteSession,
   createMachine,
+  getUserBySessionID,
+  getUserByClientID,
   getInvitedUsers,
-  getAllMachines
+  getAllMachines,
+  getUserNotEnrolledToSession,
+  deleteUserEnrollments
 };

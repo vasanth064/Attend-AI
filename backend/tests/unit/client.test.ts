@@ -1,9 +1,16 @@
 import { describe, test, expect, jest } from '@jest/globals';
 import prisma from '../../src/client';
 import { clientService } from '../../src/services';
-import { Enrollment, Prisma, Session, User } from '@prisma/client';
+import { Enrollment, Prisma, Session, User, UserStatus } from '@prisma/client';
 import ApiError from '../../src/utils/ApiError';
 import httpStatus from 'http-status';
+import {
+  deleteUserEnrollments,
+  getInvitedUsers,
+  getUserByClientID,
+  getUserBySessionID,
+  getUserNotEnrolledToSession
+} from '../../src/services/client.service';
 
 jest.mock('../../src/config/config', () => ({
   env: 'test',
@@ -31,8 +38,6 @@ jest.mock('../../src/config/config', () => ({
     apiKey: 'your_mocked_orion_api_key'
   }
 }));
-
-
 
 describe('Client service module', () => {
   describe('Invite Link Module', () => {
@@ -125,7 +130,98 @@ describe('Client service module', () => {
         );
       });
     });
+    describe('Get Invited Users', () => {
+      const mockUsers = [
+        {
+          id: 1,
+          name: 'User1',
+          email: 'user1@example.com',
+          userType: 'USER',
+          status: UserStatus.ENABLED
+        },
+        {
+          id: 2,
+          name: 'User2',
+          email: 'user2@example.com',
+          userType: 'USER',
+          status: UserStatus.ENABLED
+        }
+      ] as User[];
+
+      test('Should return invited users with status ENABLED', async () => {
+        const inviteId = 123;
+        const clientID = 456;
+        const status = UserStatus.ENABLED;
+
+        jest.spyOn(prisma.user, 'findMany').mockResolvedValueOnce(mockUsers);
+
+        const result = await getInvitedUsers(inviteId, clientID, status);
+
+        expect(prisma.user.findMany).toHaveBeenCalledWith({
+          where: { inviteId, clientID, status: UserStatus.ENABLED },
+          select: expect.any(Object)
+        });
+        expect(result).toEqual(mockUsers);
+      });
+
+      test('Should return invited users with status DISABLED', async () => {
+        const inviteId = 123;
+        const clientID = 456;
+        const status = UserStatus.DISABLED;
+        const mockUsers = [
+          {
+            id: 1,
+            name: 'User1',
+            email: 'user1@example.com',
+            userType: 'USER',
+            status: UserStatus.ENABLED
+          },
+          {
+            id: 2,
+            name: 'User2',
+            email: 'user2@example.com',
+            userType: 'USER',
+            status: UserStatus.ENABLED
+          }
+        ] as User[];
+
+        jest.spyOn(prisma.user, 'findMany').mockResolvedValueOnce(mockUsers);
+
+        const result = await getInvitedUsers(inviteId, clientID, status);
+
+        expect(prisma.user.findMany).toHaveBeenCalledWith({
+          where: { inviteId, clientID, status: UserStatus.DISABLED },
+          select: expect.any(Object)
+        });
+        expect(result).toEqual(mockUsers);
+      });
+
+      test('Should throw an error if no DISABLED users found', async () => {
+        const inviteId = 123;
+        const clientID = 456;
+        const status = UserStatus.DISABLED;
+
+        jest.spyOn(prisma.user, 'findMany').mockResolvedValueOnce([]);
+
+        await expect(getInvitedUsers(inviteId, clientID, status)).rejects.toThrow(
+          new ApiError(httpStatus.NOT_FOUND, 'No users found')
+        );
+      });
+
+      test('Should throw an error if no ENABLED users found', async () => {
+        const inviteId = 123;
+        const clientID = 456;
+        const status = UserStatus.ENABLED;
+
+        jest.spyOn(prisma.user, 'findMany').mockResolvedValueOnce([]);
+
+        await expect(getInvitedUsers(inviteId, clientID, status)).rejects.toThrow(
+          new ApiError(httpStatus.NOT_FOUND, 'No users found')
+        );
+      });
+    });
   });
+
   describe('Session Module', () => {
     describe('Create Session', () => {
       const mockData = {
@@ -229,6 +325,119 @@ describe('Client service module', () => {
         );
       });
     });
+    describe('Get User By Session ID', () => {
+      const mockUsers = [
+        {
+          id: 1,
+          name: 'User1',
+          email: 'user1@example.com',
+          userType: 'USER',
+          status: 'ENABLED',
+          userData: {},
+          inviteId: 123,
+          clientID: 456
+        },
+        {
+          id: 2,
+          name: 'User2',
+          email: 'user2@example.com',
+          userType: 'USER',
+          status: 'ENABLED',
+          userData: {},
+          inviteId: 456,
+          clientID: 789
+        }
+      ] as User[];
+
+      test('Should return users for a valid sessionID', async () => {
+        const sessionID = 123;
+
+        jest.spyOn(prisma.user, 'findMany').mockResolvedValueOnce(mockUsers);
+
+        const result = await getUserBySessionID(sessionID);
+
+        expect(prisma.user.findMany).toHaveBeenCalledWith({
+          where: {
+            Enrollments: {
+              some: {
+                session: { id: sessionID }
+              }
+            }
+          },
+          select: expect.any(Object)
+        });
+        expect(result).toEqual(mockUsers);
+      });
+
+      test('Should throw an error if no users found for the sessionID', async () => {
+        const sessionID = 999;
+
+        jest.spyOn(prisma.user, 'findMany').mockResolvedValueOnce([]);
+
+        await expect(getUserBySessionID(sessionID)).rejects.toThrow(
+          new ApiError(httpStatus.NOT_FOUND, 'User not found')
+        );
+      });
+    });
+    describe('Get Users Not Enrolled to Session', () => {
+      const mockUsers = [
+        {
+          id: 1,
+          name: 'User1',
+          email: 'user1@example.com',
+          userType: 'USER',
+          status: 'ENABLED',
+          inviteId: 123,
+          clientID: 456
+        },
+        {
+          id: 2,
+          name: 'User2',
+          email: 'user2@example.com',
+          userType: 'USER',
+          status: 'ENABLED',
+          inviteId: 456,
+          clientID: 789
+        }
+      ] as User[];
+
+      test('Should return users not enrolled to a session', async () => {
+        const sessionID = '123';
+        const inviteID = '456';
+        const clientID = 789;
+
+        jest.spyOn(prisma.user, 'findMany').mockResolvedValueOnce(mockUsers);
+
+        const result = await getUserNotEnrolledToSession(sessionID, inviteID, clientID);
+
+        expect(prisma.user.findMany).toHaveBeenCalledWith({
+          where: {
+            NOT: {
+              Enrollments: {
+                some: {
+                  SessionID: parseInt(sessionID)
+                }
+              }
+            },
+            inviteId: parseInt(inviteID),
+            clientID: clientID
+          }
+        });
+        expect(result).toEqual(mockUsers);
+      });
+
+      test('Should throw an error if no users found not enrolled to a session', async () => {
+        const sessionID = '123';
+        const inviteID = '456';
+        const clientID = 789;
+
+        jest.spyOn(prisma.user, 'findMany').mockResolvedValueOnce([]);
+
+        await expect(getUserNotEnrolledToSession(sessionID, inviteID, clientID)).rejects.toThrow(
+          new ApiError(httpStatus.NOT_FOUND, 'User not found')
+        );
+      });
+    });
   });
 
   describe('Machine Module', () => {
@@ -241,7 +450,8 @@ describe('Client service module', () => {
         userType: 'MACHINE',
         clientID: 1,
         userData: {},
-        status: 'ENABLED'
+        status: 'ENABLED',
+        inviteId: null
       };
       test('create a new machine', async () => {
         jest.spyOn(prisma.user, 'create').mockResolvedValueOnce(mockData);
@@ -264,7 +474,8 @@ describe('Client service module', () => {
         userType: 'MACHINE',
         clientID: 1,
         userData: {},
-        status: 'ENABLED'
+        status: 'ENABLED',
+        inviteId: null
       };
       test('get all machines', async () => {
         jest.spyOn(prisma.user, 'findMany').mockResolvedValueOnce([mockData]);
@@ -287,7 +498,8 @@ describe('Client service module', () => {
         userType: 'MACHINE',
         clientID: 1,
         userData: {},
-        status: 'ENABLED'
+        status: 'ENABLED',
+        inviteId: null
       };
       test('delete a machine', async () => {
         jest.spyOn(prisma.user, 'delete').mockResolvedValueOnce(mockData);
@@ -314,7 +526,8 @@ describe('Client service module', () => {
         userType: 'USER',
         clientID: 1,
         userData: {},
-        status: 'ENABLED'
+        status: 'ENABLED',
+        inviteId: null
       };
       const mockEnrollmentData: Enrollment = {
         id: 1,
@@ -382,6 +595,75 @@ describe('Client service module', () => {
         const result = await clientService.approveUserCreations([1], 1);
         expect(result).toEqual({ count: 1 });
       });
+    });
+  });
+
+  describe('Get User By Client ID', () => {
+    const mockUsers = [
+      {
+        id: 1,
+        name: 'User1',
+        email: 'user1@example.com',
+        userType: 'USER',
+        status: 'ENABLED',
+        clientID: 123
+      },
+      {
+        id: 2,
+        name: 'User2',
+        email: 'user2@example.com',
+        userType: 'USER',
+        status: 'ENABLED',
+        clientID: 123
+      }
+    ] as User[];
+
+    test('Should return users for a valid clientID', async () => {
+      const clientID = 123;
+
+      jest.spyOn(prisma.user, 'findMany').mockResolvedValueOnce(mockUsers);
+
+      const result = await getUserByClientID(clientID);
+
+      expect(prisma.user.findMany).toHaveBeenCalledWith({
+        where: { clientID },
+        select: expect.any(Object)
+      });
+      expect(result).toEqual(mockUsers);
+    });
+
+    test('Should throw an error if no users found for the clientID', async () => {
+      const clientID = 456;
+
+      jest.spyOn(prisma.user, 'findMany').mockResolvedValueOnce([]);
+
+      await expect(getUserByClientID(clientID)).rejects.toThrow(
+        new ApiError(httpStatus.NOT_FOUND, 'User not found')
+      );
+    });
+  });
+
+  describe('Delete User Enrollments', () => {
+    test('Should delete user enrollments for a valid userID and sessionID', async () => {
+      const userID = 123;
+      const sessionID = 456;
+
+      jest.spyOn(prisma.enrollment, 'deleteMany').mockResolvedValueOnce({ count: 1 });
+
+      await deleteUserEnrollments(userID, sessionID);
+
+      expect(prisma.enrollment.deleteMany).toHaveBeenCalledWith({
+        where: { userID, SessionID: sessionID }
+      });
+    });
+
+    test('Should not throw an error if no enrollments found to delete', async () => {
+      const userID = 123;
+      const sessionID = 456;
+
+      jest.spyOn(prisma.enrollment, 'deleteMany').mockResolvedValueOnce({ count: 0 });
+
+      await expect(deleteUserEnrollments(userID, sessionID)).resolves.not.toThrow();
     });
   });
 });

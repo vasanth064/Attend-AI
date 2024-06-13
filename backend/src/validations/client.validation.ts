@@ -74,6 +74,13 @@ const enrollUserToSession = Joi.object().keys({
   })
 });
 
+const usersNotEnrolledToSession = {
+  query: Joi.object().keys({
+    sessionID: Joi.number().required(),
+    inviteID: Joi.number().required()
+  })
+};
+
 export default {
   createLink,
   session,
@@ -81,5 +88,6 @@ export default {
   deleteMachine,
   enrollUserToSession,
   invitedUsers,
-  approveUserCreation
+  approveUserCreation,
+  usersNotEnrolledToSession
 };

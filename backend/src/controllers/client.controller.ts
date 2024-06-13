@@ -150,6 +150,21 @@ const getAllInvitedUsers = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send(invitedUsers);
 });
 
+const getUserByClientID = catchAsync(async (req, res) => {
+  const { clientID } = req.user as User;
+  if (!clientID) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Client ID is required');
+  }
+  const users = await clientService.getUserByClientID(clientID);
+  res.status(httpStatus.OK).send(users);
+});
+
+const getUserBySessionID = catchAsync(async (req, res) => {
+  const { sessionID } = req.params;
+  const users = await clientService.getUserBySessionID(parseInt(sessionID));
+  res.status(httpStatus.OK).send(users);
+});
+
 const approveUserCreations = catchAsync(async (req, res) => {
   const clientUser = req.user as User;
   const { userIDs } = req.body;
@@ -176,6 +191,26 @@ const enrollUserToSession = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ message: `User ${userID} enrolled to session`, session });
 });
 
+const getUserNotEnrolledToSession = catchAsync(async (req, res) => {
+  const { clientID } = req.user as User;
+  if (!clientID) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Client ID is required');
+  }
+  const { sessionID, inviteID } = req.query as { sessionID: string; inviteID: string };
+  if (!sessionID || !inviteID) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Session ID and user ID are required');
+  }
+  const users = await clientService.getUserNotEnrolledToSession(sessionID, inviteID, clientID);
+  res.status(httpStatus.OK).send(users);
+});
+
+const deleteUserEnrollments = catchAsync(async (req, res) => {
+  const { userID, sessionID } = req.query as { userID: string; sessionID: string };
+  console.log(userID, sessionID, req.query);
+  await clientService.deleteUserEnrollments(parseInt(userID), parseInt(sessionID));
+  res.status(httpStatus.OK).send({ message: `User ${userID} enrollments deleted` });
+});
+
 export default {
   createLink,
   getInviteLinks,
@@ -188,7 +223,11 @@ export default {
   updateSession,
   createMachine,
   deleteMachine,
+  getUserByClientID,
+  getUserBySessionID,
   getAllMachines,
+  getUserNotEnrolledToSession,
+  deleteUserEnrollments,
   approveUserCreations,
   enrollUserToSession,
   getAllInvitedUsers
