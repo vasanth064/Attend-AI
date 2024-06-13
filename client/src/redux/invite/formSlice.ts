@@ -21,9 +21,10 @@ const formSlice = createSlice({
     },
     updateFormItem: (state, action) => {
       const { index, data, optionIndex } = action.payload;
-      if (state.formStructure[index].options) {
-        state.formStructure[index].options[optionIndex] = {
-          ...state.formStructure[index].options[optionIndex],
+      const options = state.formStructure[index].options;
+      if (options && options?.length > 0) {
+        options[optionIndex] = {
+          ...options[optionIndex],
           ...data,
         };
       } else {

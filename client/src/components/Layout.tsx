@@ -1,5 +1,5 @@
 import { CircleUser, Menu } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
 import {
@@ -10,9 +10,10 @@ import {
 } from '@radix-ui/react-dropdown-menu';
 import { Toaster } from './ui/toaster';
 import { routes } from '../config/routes';
-import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '@/redux/authentication/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout, selectCurrentUser } from '@/redux/authentication/authSlice';
 import logo from '../assets/logo.jpeg';
+import { DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu';
 
 const NavItems = () => {
   const { user } = useSelector(selectCurrentUser);
@@ -36,6 +37,8 @@ const Layout = ({
   children: React.ReactNode;
   header?: boolean;
 }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   return (
     <div className='flex min-h-screen w-full flex-col'>
       {header && (
@@ -77,9 +80,15 @@ const Layout = ({
                   <span className='sr-only'>Toggle user menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              {/* <DropdownMenuContent align='end'>
-              <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent> */}
+              <DropdownMenuContent align='end'>
+                <DropdownMenuItem
+                  onClick={() => {
+                    dispatch(logout());
+                    navigate('/');
+                  }}>
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </header>

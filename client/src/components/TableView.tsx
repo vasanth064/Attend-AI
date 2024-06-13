@@ -35,7 +35,7 @@ interface Search {
 }
 
 interface TableViewProps<T extends object> {
-  data: T[];
+  data: T[] | (() => T[]);
   columns: ColumnDef<T>[];
   search: Search;
 }
@@ -49,6 +49,10 @@ const TableView = <T extends object>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+
+  if (typeof data === 'function') {
+    data = data();
+  }
 
   const table = useReactTable({
     data: data ?? [],
