@@ -7,6 +7,7 @@ import config from '../../config/config';
 import clientRoute from './client.route';
 import machineRoute from './machine.route';
 import prisma from '../../client';
+import { encryptPassword } from '../../utils/encryption';
 import { authService, userService } from '../../services';
 
 const router = express.Router();

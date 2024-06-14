@@ -7,6 +7,7 @@
   "scripts": {
     "start": "yarn build && prisma migrate deploy && pm2 start ecosystem.config.json --no-daemon",
     "dev": "cross-env NODE_ENV=development nodemon src/index.ts",
+    "dev:test": "cross-env NODE_ENV=test nodemon src/index.ts",
     "test:unit:cov": "jest -i --coverage --colors --verbose --detectOpenHandles",
     "test:unit": "jest -i --colors --verbose --detectOpenHandles",
     "test:integration": "docker-compose -f docker-compose.only-db-test.yml up -d && yarn db:push && jest -c jest.integration.config.ts -i --colors --verbose --detectOpenHandles && docker-compose -f docker-compose.only-db-test.yml down",
