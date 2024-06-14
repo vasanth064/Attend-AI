@@ -1,0 +1,24 @@
+stages:
+  - server_unit_tests
+  - server_deployment
+  - client_test
+  - client_deployment
+
+server_unit_tests:
+  stage: server_unit_tests
+  image: node:22-alpine
+  before_script:
+    - cd backend
+    - yarn install
+  script:
+    - yarn test:unit:cov
+
+server_deployment:
+  stage: server_deployment
+  script:
+    - curl -s "https://api.render.com/deploy/${RENDER_KEY_1}?key=${RENDER_KEY_2}" -o file.txt >/dev/null 2>&1
+
+client_deployment:
+  stage: client_deployment
+  script:
+    - curl -X POST -d {} https://api.netlify.com/build_hooks/${NETLIFY_KEY}
