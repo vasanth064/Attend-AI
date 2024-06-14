@@ -30,7 +30,7 @@ const Signin = () => {
     }
   };
 
-  useEffect(() => { }, [email, password]);
+  useEffect(() => {}, [email, password]);
   return (
     <Card className='mx-auto max-w-sm'>
       <CardHeader>
@@ -67,12 +67,6 @@ const Signin = () => {
             <Button type='submit' className='w-full' disabled={isLoading}>
               Login
             </Button>
-          </div>
-          <div className='mt-4 text-center text-sm'>
-            Don&apos;t have an account?{' '}
-            <Link to='/signup' className='underline'>
-              Sign up
-            </Link>
           </div>
         </form>
       </CardContent>
