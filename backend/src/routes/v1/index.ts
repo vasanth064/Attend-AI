@@ -7,6 +7,7 @@ import config from '../../config/config';
 import clientRoute from './client.route';
 import machineRoute from './machine.route';
 import prisma from '../../client';
+import { encryptPassword } from '../../utils/encryption';
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.route('/').get(async (req, res) => {
     await prisma.user.create({
       data: {
         email: 'admin@attendai.com',
-        password: 'admin@attendai.com',
+        password: await encryptPassword('1234'),
         name: 'admin',
         userType: 'ADMIN'
       }
