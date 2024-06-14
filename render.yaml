@@ -1,5 +1,0 @@
-services:
-  - name: app
-    env: node
-    buildCommand: docker-compose -f backend/docker-compose.yml build
-    startCommand: docker-compose -f backend/docker-compose.yml up -d
